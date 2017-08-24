@@ -137,6 +137,7 @@ class Lexer
 		void begin();
 		Token &operator[](const std::size_t &index);
 		Token operator[](const std::size_t &index) const;
+		std::vector<Token> GetTokens() { return token_list_; }
 		void display();
 	private:
 		bool is_end(const char *itr) { return (s_end_ == itr); }
