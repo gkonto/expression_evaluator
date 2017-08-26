@@ -20,8 +20,11 @@ class Parser
 		int get_precedence(Token::token_type tt);
 		bool is_left_associative(const Token &tok);
 		bool is_number(const Token &tok);
+		bool is_left_bracket(const Token &tok);
 		bool is_operator(const Token &tok);
-		bool is_higher_or_equal_precedence(const Token &tok);
+		bool front_stack_is_left_bracket();
+		bool is_right_bracket(const Token &tok);
+		bool is_stack_token_higher_or_equal_precedence(const Token &tok);
 	
 		std::vector<Token> token_list_;
 		std::vector<Token> stack_;

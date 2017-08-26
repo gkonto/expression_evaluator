@@ -42,6 +42,32 @@ static Token add_tokens(const Token &left, const Token &right)
 	return new_tok;
 }
 
+static Token mul_tokens(const Token &left, const Token &right)
+{
+	//TODO make fun
+	Token new_tok;
+	double d_left = atof(left.value.c_str());
+	double d_right = atof(right.value.c_str());
+	double value = d_left * d_right;
+
+	new_tok.type = Token::E_NUMBER;
+	new_tok.value = double_to_string(value);
+	return new_tok;
+}
+
+static Token div_tokens(const Token &left, const Token &right)
+{
+	Token new_tok;
+	double d_left = atof(left.value.c_str());
+	double d_right = atof(right.value.c_str());
+	double value = d_left / d_right;
+
+	new_tok.type = Token::E_NUMBER;
+	new_tok.value = double_to_string(value);
+	return new_tok;
+}
+
+
 static Token calc(const Token &left, const Token &right, const Token &operat)
 {
 
@@ -49,7 +75,23 @@ static Token calc(const Token &left, const Token &right, const Token &operat)
 		return add_tokens(left, right);
 	} else if (operat.type == Token::E_SUB) {
 		return sub_tokens(left, right);
+	} else if (operat.type == Token::E_MUL) {
+		return mul_tokens(left, right);
+	} else if (operat.type == Token::E_DIV) {
+		return div_tokens(left, right);
 	}
+
+}
+
+void Evaluator::display_stack()
+{
+	std::cout << "stack_: " << std::endl;
+
+	for (size_t i = 0; i < stack_.size(); i++)
+	{
+		std::cout << stack_[i].value << " ";
+	}
+	std::cout << std::endl;
 }
 
 std::vector<Token> Evaluator::evaluate()
@@ -61,7 +103,11 @@ std::vector<Token> Evaluator::evaluate()
 	       	postfix_.pop_front();
 		if (tmp.type == Token::E_NUMBER) {
 			stack_.push_back(tmp);
-		} else if (tmp.type == Token::E_ADD || tmp.type == Token::E_SUB) {
+		} else if (tmp.type == Token::E_ADD ||
+		   	tmp.type == Token::E_SUB    ||
+	       		tmp.type == Token::E_MUL    ||
+			tmp.type == Token::E_DIV)
+		{
 			Token right = stack_.back();
 			stack_.pop_back();
 			Token left ;
@@ -75,6 +121,7 @@ std::vector<Token> Evaluator::evaluate()
 			Token new_val = calc(left, right, tmp);
 			stack_.push_back(new_val);
 		}
+		display_stack();
 /*		for (int i = 0; i < stack_.size() ; i++)*/
 /*		{*/
 /*			std::cout << stack_[i].value << std::endl;*/

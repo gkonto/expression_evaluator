@@ -59,6 +59,7 @@ int main(void)
 	eval_expression("+14", 14);
 	eval_expression("7+7", 14);
 	eval_expression("-1+2", 1);
+	eval_expression("(5+10*(3-9))", -55);
 	std::cout << "ALL TESTS PASSED" << std::endl;
 	return 0;
 

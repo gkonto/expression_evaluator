@@ -10,6 +10,7 @@ class Evaluator
 {
 	public:
 		Evaluator(std::list<Token> postfix): postfix_(postfix) {}
+		void display_stack();
 		std::vector<Token> evaluate();
 	private:
 		std::list<Token> postfix_;

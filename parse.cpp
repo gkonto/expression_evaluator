@@ -6,7 +6,7 @@ void Parser::display_current_state()
 {
 	std::size_t i = 0;
 
-	std::cout << "Stack | ";
+	std::cout << "Stack   | ";
 	for (i = 0; i < stack_.size(); i++) {
 		std::cout << stack_[i].value;
 		std::cout << " ";
@@ -54,48 +54,61 @@ bool Parser::is_left_associative(const Token &tok)
 		tok.type == Token::E_MUL ||
 		tok.type == Token::E_DIV ||
 		tok.type == Token::E_MOD );
-}
+} /* Parser::is_left_associative */
 
 int Parser::get_precedence(Token::token_type tt)
 {
 	if ( tt == Token::E_ADD || tt == Token::E_SUB) {
 		return 2;
-	} else if ( tt == Token::E_MUL || tt == Token::E_DIV || Token::E_MOD) {
+	} else if ( tt == Token::E_MUL || tt == Token::E_DIV || tt == Token::E_MOD) {
 		return 3;
-	} else if (tt == Token::E_MOD) {
+	} else if (tt == Token::E_POW) {
 		return 4;	
 	} else {
-		std::cout << "WATCH OUT! Shouldn't be here" << std::endl;
+		return 0;
 	}
-}
+} /* Parser::get_precedence */
 
-bool Parser::is_higher_or_equal_precedence(const Token &tok)
+bool Parser::is_left_bracket(const Token &tok)
+{
+	return (tok.type == Token::E_LBRACKET);
+} /* Parser::is_left_bracket */
+
+bool Parser::is_right_bracket(const Token &tok)
+{
+	return (tok.type == Token::E_RBRACKET);
+} /* Parser::is_left_bracket */
+
+bool Parser::is_stack_token_higher_or_equal_precedence(const Token &tok)
 {
 	int token_precedence = get_precedence(tok.type);
 	int stack_precedence = get_precedence(stack_.back().type);
 
-	if (token_precedence > stack_precedence ||
+	if (token_precedence < stack_precedence ||
 	   	token_precedence == stack_precedence) 
 	{
 		return true;
 	}
 	return false;
 
-}
+} /* Parser::is_higher_or_equal_precedence */
 
 void Parser::add_operator(const Token &tok)
 {
-	while (!stack_.empty()
-	       	&& is_left_associative(tok) &&
-	       	is_higher_or_equal_precedence(tok) )
+	while (!stack_.empty() &&
+	      	is_left_associative(tok) &&
+	       	is_stack_token_higher_or_equal_precedence(tok))
        	{
 		postfix_.push_back(stack_.back());
 		stack_.pop_back();
 	}
 	stack_.push_back(tok);
+} /* Parser::add_operator */
+
+bool Parser::front_stack_is_left_bracket()
+{
+	return is_left_bracket(stack_.back());
 }
-
-
 
 
 void Parser::shunting_yard()
@@ -129,6 +142,18 @@ void Parser::shunting_yard()
 			postfix_.push_back(tok);
 		} else if (is_operator(tok)) {
 			add_operator(tok);
+		} else if (is_left_bracket(tok)) {
+			stack_.push_back(tok);
+		} else if (is_right_bracket(tok)) {
+			while (!stack_.empty() &&
+				!front_stack_is_left_bracket())
+			{
+				postfix_.push_back(stack_.back());
+				stack_.pop_back();
+			}
+			if (front_stack_is_left_bracket()) {
+				stack_.pop_back();
+			}
 		}
 
 		display_current_state();
