@@ -3,6 +3,7 @@
 #include <string.h>
 #include "evaluate.hpp"
 #include <iostream>
+#include <math.h>
 #include <sstream>
 
 static std::string double_to_string(const double value)
@@ -67,6 +68,18 @@ static Token div_tokens(const Token &left, const Token &right)
 	return new_tok;
 }
 
+static Token pow_tokens(const Token &left, const Token &right)
+{
+	Token new_tok;
+	double d_left = atof(left.value.c_str());
+	double d_right = atof(right.value.c_str());
+	double value = pow(d_left, d_right);
+
+	new_tok.type = Token::E_NUMBER;
+	new_tok.value = double_to_string(value);
+	return new_tok;
+}
+
 
 static Token calc(const Token &left, const Token &right, const Token &operat)
 {
@@ -79,7 +92,10 @@ static Token calc(const Token &left, const Token &right, const Token &operat)
 		return mul_tokens(left, right);
 	} else if (operat.type == Token::E_DIV) {
 		return div_tokens(left, right);
+	} else if (operat.type == Token::E_POW) {
+		return pow_tokens(left, right);
 	}
+
 
 }
 
@@ -106,7 +122,8 @@ std::vector<Token> Evaluator::evaluate()
 		} else if (tmp.type == Token::E_ADD ||
 		   	tmp.type == Token::E_SUB    ||
 	       		tmp.type == Token::E_MUL    ||
-			tmp.type == Token::E_DIV)
+			tmp.type == Token::E_DIV    ||
+			tmp.type == Token::E_POW)
 		{
 			Token right = stack_.back();
 			stack_.pop_back();

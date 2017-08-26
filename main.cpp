@@ -10,7 +10,7 @@
 #include "evaluate.hpp"
 
 /*----------------------------------------------*/
-static int evaluate(const std::string &expr)
+static double evaluate(const std::string &expr)
 {
 	//lexer
 	Lexer lex;
@@ -29,7 +29,6 @@ static int evaluate(const std::string &expr)
 	double value = atof(stack_[0].value.c_str());
 
 	std::cout << "Calculated Number is: " << value << std::endl;
-	std::cout << "----------------------" << std::endl;
 	return value;
 } /* evaluate */
 
@@ -37,6 +36,8 @@ static int evaluate(const std::string &expr)
 static void a_assert(const std::string &expr, double value)
 {
 	double eval = evaluate(expr);
+
+	std::cout << "Comparing expr : " << eval << " with value : " << value << std::endl;
 
 	if (eval != value) {
 		std::cout << "Test Failed in expression: " << expr << std::endl;
@@ -48,18 +49,30 @@ static void a_assert(const std::string &expr, double value)
 static int eval_expression(const std::string &expr, double value)
 {
 	a_assert(expr, value);
+	std::cout << "------------------------------" << std::endl;
 	return 0;
 } /* eval_expression */
 
 /*----------------------------------------------*/
 int main(void)
 {
-	eval_expression("14", 14);
-	eval_expression("-14", -14);
+	eval_expression("+14.0", 14);
+	eval_expression("-14.0", -14);
 	eval_expression("+14", 14);
 	eval_expression("7+7", 14);
 	eval_expression("-1+2", 1);
 	eval_expression("(5+10*(3-9))", -55);
+        eval_expression(".0 + .1 + .2 + .3 + .5 + .6", 1.7);
+	eval_expression("1.0+3.0*2.0",1.0+3.0*2.0); 
+	eval_expression("1.0-3.0*2.0",1.0-3.0*2.0); 
+	eval_expression("1.0 *                           3.0+2.0", 5);
+	eval_expression("-4.0-8.1", -4.0-8.1);
+	eval_expression("1.0*3.0-2.0", 1.0*3.0-2.0);
+	eval_expression("1.0+3.0/2.0", 1.0+3.0/2.0);
+	eval_expression("1.0+(3.0*2.0-4.0)", 1.0+(3.0*2.0-4.0));
+	eval_expression("1.0-(3.0*2.0+4.0)", 1.0-(3.0*2.0+4.0));
+	eval_expression("2*3^2)", 18);
+
 	std::cout << "ALL TESTS PASSED" << std::endl;
 	return 0;
 
