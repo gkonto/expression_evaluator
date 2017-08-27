@@ -484,6 +484,73 @@ void Lexer::clear()
 	token_list_.clear();
 } /* Lexer::clear */
 
+int Lexer::insert_token_core(const Token &t0, const Token &t1, Token &new_token)
+{
+	bool match         = false;
+
+	if      ((t0.type == Token::E_NUMBER  ) && (t1.type == Token::E_SYMBOL  )) {
+		new_token.type     = Token::E_MUL;
+		new_token.value    = "*";
+		new_token.position = t1.position;
+	      	match = true;
+	} else if ((t0.type == Token::E_NUMBER  ) && (t1.type == Token::E_LBRACKET)) {
+		new_token.type     = Token::E_MUL;
+		new_token.value    = "*";
+		new_token.position = t1.position;
+	       	match = true;
+	} else if ((t0.type == Token::E_SYMBOL  ) && (t1.type == Token::E_NUMBER  )) {
+		new_token.type     = Token::E_MUL;
+		new_token.value    = "*";
+		new_token.position = t1.position;
+		match = true;
+	} else if ((t0.type == Token::E_RBRACKET) && (t1.type == Token::E_NUMBER  )) {
+		new_token.type     = Token::E_MUL;
+		new_token.value    = "*";
+		new_token.position = t1.position;
+		match = true;
+	} else if ((t0.type == Token::E_RBRACKET) && (t1.type == Token::E_SYMBOL  )) {
+		new_token.type     = Token::E_MUL;
+		new_token.value    = "*";
+		new_token.position = t1.position;
+		match = true;
+	// Case (-1) --> (0-1)
+	} else if ((t0.type == Token::E_LBRACKET) && (t1.type == Token::E_ADD)) {
+		new_token.type     = Token::E_NUMBER;
+		new_token.value    = "0";
+		new_token.position = t1.position;
+		match = true;
+	} else if ((t0.type == Token::E_LBRACKET) && (t1.type == Token::E_SUB)) {
+		new_token.type     = Token::E_NUMBER;
+		new_token.value    = "0";
+		new_token.position = t1.position;
+		match = true;
+	}
+
+	return (match) ? 1 : -1;
+} /* Lexer::insert_token_core */
+
+int Lexer::insert_additional_tokens()
+{
+	if (token_list_.empty()) {
+		return 0;
+	}
+	std::size_t changes = 0;
+
+	for (std::size_t i = 0; i < (token_list_.size() - 1); ++i)
+	{
+		Token t;
+		int insert_index = -1;
+		insert_index = insert_token_core(token_list_[i], token_list_[i+1], t);
+		if ((insert_index >= 0) && (insert_index <= 2+1)) {
+			token_list_.insert(token_list_.begin() + ( i + insert_index), t);
+			changes++;
+		}
+
+	}
+
+	return changes++;
+} /* Lexer::insert_additional_tokens */
+
 bool Lexer::process(const std::string &str)
 /* Beginning of everything.
  * A string is given in this member fun.
@@ -525,6 +592,9 @@ bool Lexer::process(const std::string &str)
 			return false;
 		}
 	}
+	//insert needed tokens
+	insert_additional_tokens();
+
 	return true;
 } /* Lexer::process */
 

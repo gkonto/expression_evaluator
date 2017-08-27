@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 #include <iostream>
 
@@ -71,7 +72,9 @@ int main(void)
 	eval_expression("1.0+3.0/2.0", 1.0+3.0/2.0);
 	eval_expression("1.0+(3.0*2.0-4.0)", 1.0+(3.0*2.0-4.0));
 	eval_expression("1.0-(3.0*2.0+4.0)", 1.0-(3.0*2.0+4.0));
-	eval_expression("2*3^2)", 18);
+	eval_expression("2*3^2)", 2*pow(3,2));
+	eval_expression("2^3^2)", 512);
+	eval_expression("2 ^ (-1)", pow(2, -1));
 
 	std::cout << "ALL TESTS PASSED" << std::endl;
 	return 0;

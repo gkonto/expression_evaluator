@@ -148,6 +148,9 @@ class Lexer
 		void scan_symbol();
 		void scan_number();
 		void scan_string();
+
+		int insert_token_core(const Token &t0, const Token &t1, Token &new_token);
+		int insert_additional_tokens();
 	private:
 		std::string expression_;
 		std::vector<Token> token_list_; 
