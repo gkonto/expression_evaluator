@@ -75,6 +75,8 @@ int main(void)
 	eval_expression("2*3^2)", 2*pow(3,2));
 	eval_expression("2^3^2)", 512);
 	eval_expression("2 ^ (-1)", pow(2, -1));
+	eval_expression("2 ^ (-0.2 + 0.2)", pow(2, -0.2+0.2));
+	eval_expression("0^2", pow(0, 2));
 
 	std::cout << "ALL TESTS PASSED" << std::endl;
 	return 0;
