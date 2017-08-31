@@ -1,7 +1,15 @@
 PROJECT(expression_evaluator)
 
-ADD_EXECUTABLE(expression_evaluator  main.cpp)
-ADD_EXECUTABLE(expression_evaluator  parse.cpp)
-ADD_EXECUTABLE(expression_evaluator  evaluate.cpp)
-ADD_EXECUTABLE(expression_evaluator  lexer.cpp)
+set(HEADERS
+    lexer.hpp
+    parse.hpp
+    evaluate.hpp)
+
+set(SOURCES 
+    main.cpp
+    parse.cpp
+    evaluate.cpp
+    lexer.cpp)
+
+ADD_EXECUTABLE(expression_evaluator ${HEADERS} ${SOURCES})
 
