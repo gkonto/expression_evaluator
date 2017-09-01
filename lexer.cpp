@@ -6,64 +6,64 @@
 
 
 
-bool details::is_whitespace(const char c)
+bool details::isWhitespace(const char c)
 {
          return (' '  == c) || ('\n' == c) ||
                 ('\r' == c) || ('\t' == c) ||
                 ('\b' == c) || ('\v' == c) ||
                 ('\f' == c) ;
-} /* details::is_whitespace */
+} /* details::isWhitespace */
 
-bool details::is_operator_char(const char c)
+bool details::isOperatorChar(const char c)
 {
 	return (('+' == c) || ('-' == c) ||
 		('*' == c) || ('/' == c) ||
 		('^' == c) || ('(' == c) ||
 	       	(')' == c));
-} /* details::is_operator_char */
+} /* details::isOperatorChar */
 
-bool details::is_letter(const char c)
+bool details::isLetter(const char c)
 {
 	return (('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z'));
-} /* details::is_letter */
+} /* details::isLetter */
 
-bool details::is_digit(const char c)
+bool details::isDigit(const char c)
 {
 	return (('0' <= c) && (c <= '9'));
-} /* details::is_digit */
+} /* details::isDigit */
 
-bool details::is_letter_or_digit(const char c)
+bool details::isLetterOrDigit(const char c)
 {
-	return is_letter(c) || is_digit(c);
-} /* is_letter_or_digit */
+	return isLetter(c) || isDigit(c);
+} /* details::isLetterOrDigit */
 
-bool details::is_left_bracket(const char c)
+bool details::isLeftBracket(const char c)
 {
 	return ('(' == c);
-} /* details::is_left_bracket */
+} /* details::isLeftBracket */
 
 
-bool details::is_right_bracket(const char c)
+bool details::isRightBracket(const char c)
 {
 	return (')' == c);
-} /* details::is_right_bracket */
+} /* details::isRightBracket */
 
-bool details::is_bracket(const char c)
+bool details::isBracket(const char c)
 {
-	return is_left_bracket(c) || is_right_bracket(c);
-} /* details::is_bracket */
+	return isLeftBracket(c) || isRightBracket(c);
+} /* details::isBracket */
 
-bool details::is_sign(const char c)
+bool details::isSign(const char c)
 {
 	return ('+' == c) || ('-' == c);
-} /* details::is_sign */
+} /* details::isSign */
 
-bool details::imatch(const char c1, const char c2)
+bool details::iMatch(const char c1, const char c2)
 {
 	return std::tolower(c1) == std::tolower(c2);
-}
+} /* details::iMatch */
 
-bool details::imatch(const std::string &s1, const std::string &s2)
+bool details::iMatch(const std::string &s1, const std::string &s2)
 {
 	if (s1.size() == s2.size())
 	{
@@ -77,9 +77,9 @@ bool details::imatch(const std::string &s1, const std::string &s2)
 		return true;
 	}
 	return true;
-}
+} /* details::iMatch */
 
-bool details::cleanup_escapes(std::string &s)
+void details::cleanupEscapes(std::string &s)
 {
 	typedef std::string::iterator str_itr_t;
 
@@ -123,13 +123,13 @@ bool details::cleanup_escapes(std::string &s)
 		++itr2;
 	}
 	s.resize(s.size() - removal_count);
-}
+} /* details::cleanupEscapes */
 
 /*********************************************************************/
 /*		STRUCT TOKEN START				     */
 /*********************************************************************/
 template <typename Iterator>
-Token &Token::set_token(const token_type tt, const Iterator begin, const Iterator end, const Iterator base_begin)
+Token &Token::setToken(const token_type tt, const Iterator begin, const Iterator end, const Iterator base_begin)
 {
 	type = tt;
 	value.assign(begin, end);
@@ -137,17 +137,17 @@ Token &Token::set_token(const token_type tt, const Iterator begin, const Iterato
 		position = std::distance(base_begin, begin);
 	}
 	return *this;
-}
+} /* &Token::setToken */
 
-Token& Token::set_token(const token_type tt, const std::string &s, const std::size_t p)
+Token& Token::setToken(const token_type tt, const std::string &s, const std::size_t p)
 {
 	type = tt;
 	value = s;
 	position = p;
 	return *this;
-}
+} /* Token::setToken */
 
-std::string Token::to_str(token_type t)
+std::string Token::toStr(token_type t)
 {
 	switch (t)
 	{
@@ -167,20 +167,20 @@ std::string Token::to_str(token_type t)
 		case E_DIV         : return "/";
 		case E_MUL         : return "*";
 		case E_MOD         : return "%";
-		case E_POW         : return "^";
+		case E_POW         : return "**";
 		default            : return "UNKNOWN";
 
 	}
-}
+} /* Token::toStr */
 
-bool Token::is_error() const
+bool Token::isError() const
 {
 	return ((E_ERROR == type)      ||
 		(E_ERR_SYMBOL == type) ||
 		(E_ERR_NUMBER == type) ||
 		(E_ERR_STRING == type)
 	       );
-}
+} /* Token::isError */
 
 void Lexer::display()
 {
@@ -192,24 +192,24 @@ void Lexer::display()
 		printf("Token[%02d] @ %03d  %6s  -->  '%s'\n",
 			static_cast<unsigned int>(i),
 			static_cast<unsigned int>(t.position),
-			t.to_str(t.type).c_str(),
+			t.toStr(t.type).c_str(),
 			t.value.c_str());
 	}
 	std::cout << std::endl;
-}
+} /* Lexer::display */
 
-void Lexer::skip_whitespace(void)
+void Lexer::skipWhitespace(void)
 {
-	while (!is_end(s_itr_) && details::is_whitespace(*s_itr_))
+	while (!isEnd(s_itr_) && details::isWhitespace(*s_itr_))
 	{
 		++s_itr_;
 	}
-} /* Lexer::skipwhitespace */
+} /* Lexer::skipWhitespace */
 
 /*********************************************************************/
 
 /*********************************************************************/
-static bool comment_start(const char c0, const char c1, int &mode, int &incr)
+static bool commentStart(const char c0, const char c1, int &mode, int &incr)
 {
 	mode = 0;
 	if ( '#' == c0) {
@@ -225,21 +225,21 @@ static bool comment_start(const char c0, const char c1, int &mode, int &incr)
 		}
 	}
 	return (mode != 0);
-} /* comment_start */
+} /* commentStart */
 
 /*********************************************************************/
 
 /*********************************************************************/
-static bool comment_end(const char c0, const char c1, const int mode)
+static bool commentEnd(const char c0, const char c1, const int mode)
 {
 	return ((1 == mode) && ('\n' == c0)) ||
 		((2 == mode) && ('*' == c0) && ('/' == c1));
-} /* comment_end */
+} /* commentEnd */
 
 /*********************************************************************/
 
 /*********************************************************************/
-void Lexer::skip_comments(void)
+void Lexer::skipComments(void)
 // The following comment styles are supported:
 // 1. // .... \n --> mode == 1;
 // 2. #  .... \n --> mode == 2;
@@ -248,33 +248,33 @@ void Lexer::skip_comments(void)
 	 int mode = 0;
 	 int increment = 0;
 
-	if (is_end(s_itr_) || is_end((s_itr_ + 1))) {
+	if (isEnd(s_itr_) || isEnd((s_itr_ + 1))) {
 
 		 return;
-	} else if (!comment_start(*s_itr_, *(s_itr_ + 1), mode, increment)) {
+	} else if (!commentStart(*s_itr_, *(s_itr_ + 1), mode, increment)) {
 
 		 return;
 	}
 	
 	s_itr_ += increment;
 
-	while (!is_end(s_itr_) && !comment_end(*s_itr_, *(s_itr_ + 1), mode))
+	while (!isEnd(s_itr_) && !commentEnd(*s_itr_, *(s_itr_ + 1), mode))
 	{
 		++s_itr_;
 	}
 
-	if (!is_end(s_itr_))
+	if (!isEnd(s_itr_))
 	{
 		s_itr_ += mode;
-		skip_whitespace();
-		skip_comments();
+		skipWhitespace();
+		skipComments();
 	}
-} /* Lexer::skip_comments */
+} /* Lexer::skipComments */
 
 /*********************************************************************/
 
 /*********************************************************************/
-void Lexer::scan_token()
+void Lexer::scanToken()
 /*
  * Detects the type of token.
  * Operator
@@ -283,35 +283,35 @@ void Lexer::scan_token()
  * String
  */
 {
-	skip_whitespace();
-	skip_comments();
+	skipWhitespace();
+	skipComments();
 
-	if (is_end(s_itr_)) {
+	if (isEnd(s_itr_)) {
 		return;
-	} else if (details::is_operator_char(*s_itr_)) {
-		scan_operator();
+	} else if (details::isOperatorChar(*s_itr_)) {
+		scanOperator();
 		return;
-	} else if (details::is_letter(*s_itr_)) {
-		scan_symbol();
+	} else if (details::isLetter(*s_itr_)) {
+		scanSymbol();
 		return;
-	} else if (details::is_digit((*s_itr_)) || ('.' == (*s_itr_))) {
-		scan_number();
+	} else if (details::isDigit((*s_itr_)) || ('.' == (*s_itr_))) {
+		scanNumber();
 		return;
 	} else if ('\'' == (*s_itr_)) {
-		scan_string();
+		scanString();
 		return;
 	} else {
 		Token t;
-		t.set_token(Token::E_ERROR, s_itr_, s_itr_ + 2, base_itr_);
+		t.setToken(Token::E_ERROR, s_itr_, s_itr_ + 2, base_itr_);
 		token_list_.push_back(t);
 		++s_itr_;
 	}
-} /* Lexer::scan_token */
+} /* Lexer::scanToken */
 
 /*********************************************************************/
 
 /*********************************************************************/
-void Lexer::scan_operator()
+void Lexer::scanOperator()
 /* Identifies what type of operator is the token
  * Creates the token and pushes is to the token_list_
  * where all tokens are stored.
@@ -320,32 +320,50 @@ void Lexer::scan_operator()
 {
 	Token t;
 	
-	t.set_token(Token::token_type(*s_itr_),s_itr_,s_itr_ + 1,base_itr_);
+	if (!isEnd(s_itr_ + 1))
+	{
+		Token::token_type ttype = Token::E_NONE;
+
+		char c0 = s_itr_[0];
+		char c1 = s_itr_[1];
+
+		if ((c0 == '*') && (c1 == '*')) ttype = Token::E_POW;
+		
+		if (Token::E_NONE != ttype)
+		{
+			t.setToken(ttype, s_itr_, s_itr_ + 2, base_itr_);
+			token_list_.push_back(t);
+			s_itr_ += 2;
+			return;
+		}
+	}
+
+	t.setToken(Token::token_type(*s_itr_),s_itr_,s_itr_ + 1,base_itr_);
 
 	token_list_.push_back(t);
 
 	++s_itr_;
-} /* Lexer::scan_operator */
+} /* Lexer::scanOperator */
 
 /*********************************************************************/
 
 /*********************************************************************/
-void Lexer::scan_symbol()
+void Lexer::scanSymbol()
 {
 	const char *begin = s_itr_;
-	while ((!is_end(s_itr_)) && (details::is_letter_or_digit(*s_itr_) || ((*s_itr_) == '_')))
+	while ((!isEnd(s_itr_)) && (details::isLetterOrDigit(*s_itr_) || ((*s_itr_) == '_')))
 	{
 		++s_itr_;
 	}
 	Token t;
-	t.set_token(Token::E_SYMBOL, begin, s_itr_, base_itr_);
+	t.setToken(Token::E_SYMBOL, begin, s_itr_, base_itr_);
 	token_list_.push_back(t);
-} /* Lexer::scan_symbol */
+} /* Lexer::scanSymbol */
 
 /*********************************************************************/
 
 /*********************************************************************/
-void Lexer::scan_number()
+void Lexer::scanNumber()
 {
 /*
  * Attempt to match a valid numeric value in one of the following formats:
@@ -365,38 +383,38 @@ void Lexer::scan_number()
 	bool post_e_digit_found = false;
 	Token t;
 
-	while (!is_end(s_itr_))
+	while (!isEnd(s_itr_))
 	{
 		if ('.' == (*s_itr_))
 		{
 			if (dot_found)
 			{
-				t.set_token(Token::E_ERROR, begin, s_itr_, base_itr_);
+				t.setToken(Token::E_ERROR, begin, s_itr_, base_itr_);
 				token_list_.push_back(t);
 				return;
 			}
 			dot_found = true;
 			++s_itr_;
 			continue;
-		} else if (details::imatch('e',(*s_itr_))) {
+		} else if (details::iMatch('e',(*s_itr_))) {
                		const char& c = *(s_itr_ + 1);
 
-               		if (is_end(s_itr_ + 1))
+               		if (isEnd(s_itr_ + 1))
 		        {
-				t.set_token(Token::E_ERROR,begin,s_itr_,base_itr_);
+				t.setToken(Token::E_ERROR,begin,s_itr_,base_itr_);
 				token_list_.push_back(t);
 				return;
-		       } else if (('+' != c) && ('-' != c) && !details::is_digit(c)) {
-                 		t.set_token(Token::E_ERROR,begin,s_itr_,base_itr_);
+		       } else if (('+' != c) && ('-' != c) && !details::isDigit(c)) {
+                 		t.setToken(Token::E_ERROR,begin,s_itr_,base_itr_);
 				token_list_.push_back(t);
 				return;
 		       }
 		       e_found = true;
 		       ++s_itr_;
 		       continue;
-		} else if (e_found && details::is_sign(*s_itr_) && !post_e_digit_found) {
+		} else if (e_found && details::isSign(*s_itr_) && !post_e_digit_found) {
 			if (post_e_sign_found) {
-				t.set_token(Token::E_ERROR,begin,s_itr_,base_itr_);
+				t.setToken(Token::E_ERROR,begin,s_itr_,base_itr_);
 				token_list_.push_back(t);
 				return;
 			}
@@ -404,34 +422,34 @@ void Lexer::scan_number()
 			post_e_sign_found = true;
 			++s_itr_;
 			continue;
-		} else if (e_found && details::is_digit(*s_itr_)) {
+		} else if (e_found && details::isDigit(*s_itr_)) {
 			post_e_digit_found = true;
 			++s_itr_;
 
 			continue;
-		} else if (('.' != (*s_itr_)) && !details::is_digit(*s_itr_))
+		} else if (('.' != (*s_itr_)) && !details::isDigit(*s_itr_))
 			break;
 		else
 			++s_itr_;
          }
 
-         t.set_token( Token::E_NUMBER, begin,s_itr_,base_itr_);
+         t.setToken( Token::E_NUMBER, begin,s_itr_,base_itr_);
          token_list_.push_back(t);
          return;
 
-} /* Lexer::scan_number */
+} /* Lexer::scanNumber */
 
 
 /*********************************************************************/
 
 /*********************************************************************/
-void Lexer::scan_string()
+void Lexer::scanString()
 {
 	const char *begin = s_itr_ + 1;
 	Token t;
 	if (std::distance(s_itr_, s_end_) < 2)
 	{
-		t.set_token(Token::E_ERROR, s_itr_, s_end_, base_itr_);
+		t.setToken(Token::E_ERROR, s_itr_, s_end_, base_itr_);
 		token_list_.push_back(t);
 		return;
 	}
@@ -440,7 +458,7 @@ void Lexer::scan_string()
 	bool escaped_found = false;
 	bool escaped = false;
 
-	while (!is_end(s_itr_))
+	while (!isEnd(s_itr_))
 	{
 		if (!escaped && ('\\' == *s_itr_))
 		{
@@ -457,24 +475,24 @@ void Lexer::scan_string()
 		++s_itr_;
 	}
 
-	if (is_end(s_itr_))
+	if (isEnd(s_itr_))
 	{
-		t.set_token(Token::E_ERROR, begin, s_itr_, base_itr_);
+		t.setToken(Token::E_ERROR, begin, s_itr_, base_itr_);
 		token_list_.push_back(t);
 		return;
 	}
 
 	if (!escaped_found) {
-		t.set_token(Token::E_STRING, begin, s_itr_, base_itr_);
+		t.setToken(Token::E_STRING, begin, s_itr_, base_itr_);
 	} else {
 		std::string parsed_string(begin, s_itr_);
-		details::cleanup_escapes(parsed_string);
-		t.set_token(Token::E_STRING, parsed_string, std::distance(base_itr_, begin));
+		details::cleanupEscapes(parsed_string);
+		t.setToken(Token::E_STRING, parsed_string, std::distance(base_itr_, begin));
 	}
 	token_list_.push_back(t);
 	++s_itr_;
 	return;
-} /* Lexer::scan_string */
+} /* Lexer::scanString */
 
 void Lexer::clear()
 {
@@ -484,7 +502,7 @@ void Lexer::clear()
 	token_list_.clear();
 } /* Lexer::clear */
 
-int Lexer::insert_token_core(const Token &t0, const Token &t1, Token &new_token)
+int Lexer::insertTokenCore(const Token &t0, const Token &t1, Token &new_token)
 {
 	bool match         = false;
 
@@ -527,9 +545,9 @@ int Lexer::insert_token_core(const Token &t0, const Token &t1, Token &new_token)
 	}
 
 	return (match) ? 1 : -1;
-} /* Lexer::insert_token_core */
+} /* Lexer::insertTokenCore */
 
-int Lexer::insert_additional_tokens()
+int Lexer::insertAdditionalTokens()
 {
 	if (token_list_.empty()) {
 		return 0;
@@ -540,7 +558,7 @@ int Lexer::insert_additional_tokens()
 	{
 		Token t;
 		int insert_index = -1;
-		insert_index = insert_token_core(token_list_[i], token_list_[i+1], t);
+		insert_index = insertTokenCore(token_list_[i], token_list_[i+1], t);
 		if ((insert_index >= 0) && (insert_index <= 2+1)) {
 			token_list_.insert(token_list_.begin() + ( i + insert_index), t);
 			changes++;
@@ -549,7 +567,7 @@ int Lexer::insert_additional_tokens()
 	}
 
 	return changes++;
-} /* Lexer::insert_additional_tokens */
+} /* Lexer::insertAdditionalTokens */
 
 bool Lexer::process(const std::string &str)
 /* Beginning of everything.
@@ -572,19 +590,19 @@ bool Lexer::process(const std::string &str)
 /*	std::cout << "s_itr_ : "   <<  s_itr_ << std::endl;*/
 /*	std::cout << "s_end_ :"    << s_end_  << std::endl;*/
 
-	eof_token_.set_token(Token::E_EOF, s_end_, s_end_, base_itr_);
+	eof_token_.setToken(Token::E_EOF, s_end_, s_end_, base_itr_);
 	token_list_.clear();
 
 /*	std::cout << "Entering analization the while loop in process" << std::endl << std::endl;*/
-	while(!is_end(s_itr_))
+	while(!isEnd(s_itr_))
 	{
 /*		std::cout << "base_itr_: " << *s_itr_  << std::endl;*/
 /*		std::cout << "s_itr_ : "   <<  *s_itr_ << std::endl;*/
 /*		std::cout << "s_end_ :"    << *s_end_  << std::endl;*/
-		scan_token();
+		scanToken();
 		if (token_list_.empty()) {
 			return true;
-		} else if (token_list_.back().is_error()) {
+		} else if (token_list_.back().isError()) {
 			std::cout << "ERROR" << std::endl;
 			std::cout << "base_itr_: " << *s_itr_  << std::endl;
 			std::cout << "s_itr_ : "   <<  *s_itr_ << std::endl;
@@ -593,7 +611,7 @@ bool Lexer::process(const std::string &str)
 		}
 	}
 	//insert needed tokens
-	insert_additional_tokens();
+	insertAdditionalTokens();
 
 	return true;
 } /* Lexer::process */
