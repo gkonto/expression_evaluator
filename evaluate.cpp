@@ -5,18 +5,19 @@
 #include <iostream>
 #include <math.h>
 #include <sstream>
+#include <assert.h>
 
 static std::string doubleToString(const double value)
 {
 	std::ostringstream ss;
 	ss << value;
 	return ss.str();
-}
+} /* doubleToString */
 
 static double stringToDouble(const std::string &value)
 {
 	return atof(value.c_str());
-}
+} /* stringToDouble */
 
 static Token subTokens(const Token &left, const Token &right)
 {
@@ -29,7 +30,7 @@ static Token subTokens(const Token &left, const Token &right)
 	new_tok.type  = Token::E_NUMBER;
 	new_tok.value = doubleToString(value);
 	return new_tok;
-}
+} /* subTokens */
 
 static Token addTokens(const Token &left, const Token &right)
 {
@@ -41,7 +42,7 @@ static Token addTokens(const Token &left, const Token &right)
 	new_tok.type  = Token::E_NUMBER;
 	new_tok.value = doubleToString(value);
 	return new_tok;
-}
+} /* addTokens */
 
 static Token mulTokens(const Token &left, const Token &right)
 {
@@ -54,7 +55,7 @@ static Token mulTokens(const Token &left, const Token &right)
 	new_tok.type = Token::E_NUMBER;
 	new_tok.value = doubleToString(value);
 	return new_tok;
-}
+} /* mulTokens */
 
 static Token divTokens(const Token &left, const Token &right)
 {
@@ -66,7 +67,7 @@ static Token divTokens(const Token &left, const Token &right)
 	new_tok.type = Token::E_NUMBER;
 	new_tok.value = doubleToString(value);
 	return new_tok;
-}
+} /* divTokens */
 
 static Token powTokens(const Token &left, const Token &right)
 {
@@ -78,23 +79,35 @@ static Token powTokens(const Token &left, const Token &right)
 	new_tok.type = Token::E_NUMBER;
 	new_tok.value = doubleToString(value);
 	return new_tok;
-}
+} /* powTokens */
 
 
 static Token calc(const Token &left, const Token &right, const Token &operat)
 {
+	Token t;
+
 	if (operat.type ==  Token::E_ADD) {
-		return addTokens(left, right);
+		t = addTokens(left, right);
+		return t;
 	} else if (operat.type == Token::E_SUB) {
-		return subTokens(left, right);
+		t = subTokens(left, right);
+		return t;
 	} else if (operat.type == Token::E_MUL) {
-		return mulTokens(left, right);
+		t = mulTokens(left, right);
+		return t;
 	} else if (operat.type == Token::E_DIV) {
-		return divTokens(left, right);
+		t = divTokens(left, right);
+		return t;
 	} else if (operat.type == Token::E_POW) {
-		return powTokens(left, right);
+		t = powTokens(left, right);
+		return t;
+	} else {
+		t.type = Token::E_ERROR;
+		std::cout << "Should not reach this place" << std::endl;
+		assert(t.type == Token::E_ERROR);
+		return t;
 	}
-}
+} /* calc */
 
 void Evaluator::displayStack()
 {
@@ -105,7 +118,7 @@ void Evaluator::displayStack()
 		std::cout << stack_[i].value << " ";
 	}
 	std::cout << std::endl;
-}
+} /* Evaluator::displayStack */
 
 std::vector<Token> Evaluator::evaluate()
 {
@@ -142,4 +155,4 @@ std::vector<Token> Evaluator::evaluate()
 /*		}*/
 	}
 	return stack_;
-}
+} /* Evaluator::evaluate */

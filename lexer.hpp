@@ -34,7 +34,6 @@
  *************************************************************************************
 */
 
-
 #ifndef LEXER_HPP
 #define LEXER_HPP
 
@@ -66,7 +65,7 @@ namespace details
 	bool isSign(const char c);
 	bool iMatch(const char c1, const char c2);
 	bool iMatch(const std::string &s1 , const std::string &s2);
-	bool cleanupEscapes(std::string &s);
+	void cleanupEscapes(std::string &s);
 }
 
 struct Token
@@ -149,12 +148,12 @@ class Lexer
 		int insertTokenCore(const Token &t0, const Token &t1, Token &new_token);
 		int insertAdditionalTokens();
 	private:
-		std::string expression_;
-		std::vector<Token> token_list_; 
-		Token eof_token_;
 		const char *base_itr_;
 		const char *s_itr_;
 		const char *s_end_;
+		std::string expression_;
+		std::vector<Token> token_list_; 
+		Token eof_token_;
 };
 
 

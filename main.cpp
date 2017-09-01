@@ -9,7 +9,6 @@
 #include "lexer.hpp"
 #include "parse.hpp"
 #include "evaluate.hpp"
-
 /*----------------------------------------------*/
 static double evaluate(const std::string &expr)
 {

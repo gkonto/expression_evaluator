@@ -5,7 +5,6 @@
 #include <vector>
 #include "lexer.hpp"
 
-
 class Evaluator
 {
 	public:
@@ -16,6 +15,5 @@ class Evaluator
 		std::list<Token> postfix_;
 		std::vector<Token> stack_;
 };
-
 
 #endif

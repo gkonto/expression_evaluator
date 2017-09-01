@@ -18,7 +18,7 @@ void Parser::displayCurrentState()
 		std::cout << " " ;
 	}
 	std::cout << std::endl << std::endl;;
-}
+} /* Parser::displayCurrentState */
 
 void Parser::displayTokenVector()
 {
@@ -29,12 +29,12 @@ void Parser::displayTokenVector()
 	}
 
 	std::cout << std::endl;
-}
+} /* Parser::displayTokenVector */
 
 bool Parser::isNumber(const Token &tok)
 {
 	return (tok.type == Token::E_NUMBER);
-}
+} /* Parser::isNumber */
 
 bool Parser::isOperator(const Token &tok)
 {
@@ -44,7 +44,7 @@ bool Parser::isOperator(const Token &tok)
 		tok.type == Token::E_DIV ||
 		tok.type == Token::E_MOD ||
 		tok.type == Token::E_POW );
-}
+} /* Parser::isOperator */
 
 bool Parser::isLeftAssociative(const Token &tok)
 {
@@ -53,7 +53,7 @@ bool Parser::isLeftAssociative(const Token &tok)
 		tok.type == Token::E_MUL ||
 		tok.type == Token::E_DIV ||
 		tok.type == Token::E_MOD );
-} /* Parser::is_left_associative */
+} /* Parser::isLeftAssociative */
 
 int Parser::getPrecedence(Token::token_type tt)
 {
@@ -66,17 +66,17 @@ int Parser::getPrecedence(Token::token_type tt)
 	} else {
 		return 0;
 	}
-} /* Parser::get_precedence */
+} /* Parser::getPrecedence */
 
 bool Parser::isLeftBracket(const Token &tok)
 {
 	return (tok.type == Token::E_LBRACKET);
-} /* Parser::is_left_bracket */
+} /* Parser::isLeftBracket */
 
 bool Parser::isRightBracket(const Token &tok)
 {
 	return (tok.type == Token::E_RBRACKET);
-} /* Parser::is_left_bracket */
+} /* Parser::isRightBracket */
 
 bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok)
 {
@@ -90,7 +90,7 @@ bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok)
 	}
 	return false;
 
-} /* Parser::is_higher_or_equal_precedence */
+} /* Parser::isStackTokenHigherOrEqualPrecedence */
 
 void Parser::addOperator(const Token &tok)
 {
@@ -102,12 +102,12 @@ void Parser::addOperator(const Token &tok)
 		stack_.pop_back();
 	}
 	stack_.push_back(tok);
-} /* Parser::add_operator */
+} /* Parser::addOperator */
 
 bool Parser::frontStackIsLeftBracket()
 {
 	return isLeftBracket(stack_.back());
-}
+} /* Parser::frontStackIsLeftBracket */
 
 
 void Parser::shuntingYard()
@@ -163,4 +163,4 @@ void Parser::shuntingYard()
 		stack_.pop_back();
 	}
 	displayCurrentState();
-}
+} /* Parser::shuntingYard */

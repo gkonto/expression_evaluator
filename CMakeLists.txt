@@ -1,5 +1,8 @@
+cmake_minimum_required(VERSION 2.8.7)
 PROJECT(expression_evaluator)
-
+add_definitions("-Wall")
+cmake_policy(SET CMP0002 OLD)
+cmake_policy(SET CMP0000 OLD)
 ADD_EXECUTABLE(expression_evaluator  main.cpp)
 ADD_EXECUTABLE(expression_evaluator  parse.cpp)
 ADD_EXECUTABLE(expression_evaluator  evaluate.cpp)

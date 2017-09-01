@@ -12,7 +12,7 @@ bool details::isWhitespace(const char c)
                 ('\r' == c) || ('\t' == c) ||
                 ('\b' == c) || ('\v' == c) ||
                 ('\f' == c) ;
-} /* details::is_whitespace */
+} /* details::isWhitespace */
 
 bool details::isOperatorChar(const char c)
 {
@@ -20,48 +20,48 @@ bool details::isOperatorChar(const char c)
 		('*' == c) || ('/' == c) ||
 		('^' == c) || ('(' == c) ||
 	       	(')' == c));
-} /* details::is_operator_char */
+} /* details::isOperatorChar */
 
 bool details::isLetter(const char c)
 {
 	return (('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z'));
-} /* details::is_letter */
+} /* details::isLetter */
 
 bool details::isDigit(const char c)
 {
 	return (('0' <= c) && (c <= '9'));
-} /* details::is_digit */
+} /* details::isDigit */
 
 bool details::isLetterOrDigit(const char c)
 {
 	return isLetter(c) || isDigit(c);
-} /* is_letter_or_digit */
+} /* details::isLetterOrDigit */
 
 bool details::isLeftBracket(const char c)
 {
 	return ('(' == c);
-} /* details::is_left_bracket */
+} /* details::isLeftBracket */
 
 
 bool details::isRightBracket(const char c)
 {
 	return (')' == c);
-} /* details::is_right_bracket */
+} /* details::isRightBracket */
 
 bool details::isBracket(const char c)
 {
 	return isLeftBracket(c) || isRightBracket(c);
-} /* details::is_bracket */
+} /* details::isBracket */
 
 bool details::isSign(const char c)
 {
 	return ('+' == c) || ('-' == c);
-} /* details::is_sign */
+} /* details::isSign */
 
 bool details::iMatch(const char c1, const char c2)
 {
 	return std::tolower(c1) == std::tolower(c2);
-}
+} /* details::iMatch */
 
 bool details::iMatch(const std::string &s1, const std::string &s2)
 {
@@ -77,9 +77,9 @@ bool details::iMatch(const std::string &s1, const std::string &s2)
 		return true;
 	}
 	return true;
-}
+} /* details::iMatch */
 
-bool details::cleanupEscapes(std::string &s)
+void details::cleanupEscapes(std::string &s)
 {
 	typedef std::string::iterator str_itr_t;
 
@@ -123,7 +123,7 @@ bool details::cleanupEscapes(std::string &s)
 		++itr2;
 	}
 	s.resize(s.size() - removal_count);
-}
+} /* details::cleanupEscapes */
 
 /*********************************************************************/
 /*		STRUCT TOKEN START				     */
@@ -137,7 +137,7 @@ Token &Token::setToken(const token_type tt, const Iterator begin, const Iterator
 		position = std::distance(base_begin, begin);
 	}
 	return *this;
-}
+} /* &Token::setToken */
 
 Token& Token::setToken(const token_type tt, const std::string &s, const std::size_t p)
 {
@@ -145,7 +145,7 @@ Token& Token::setToken(const token_type tt, const std::string &s, const std::siz
 	value = s;
 	position = p;
 	return *this;
-}
+} /* Token::setToken */
 
 std::string Token::toStr(token_type t)
 {
@@ -171,7 +171,7 @@ std::string Token::toStr(token_type t)
 		default            : return "UNKNOWN";
 
 	}
-}
+} /* Token::toStr */
 
 bool Token::isError() const
 {
@@ -180,7 +180,7 @@ bool Token::isError() const
 		(E_ERR_NUMBER == type) ||
 		(E_ERR_STRING == type)
 	       );
-}
+} /* Token::isError */
 
 void Lexer::display()
 {
@@ -196,7 +196,7 @@ void Lexer::display()
 			t.value.c_str());
 	}
 	std::cout << std::endl;
-}
+} /* Lexer::display */
 
 void Lexer::skipWhitespace(void)
 {
@@ -204,7 +204,7 @@ void Lexer::skipWhitespace(void)
 	{
 		++s_itr_;
 	}
-} /* Lexer::skipwhitespace */
+} /* Lexer::skipWhitespace */
 
 /*********************************************************************/
 
@@ -225,7 +225,7 @@ static bool commentStart(const char c0, const char c1, int &mode, int &incr)
 		}
 	}
 	return (mode != 0);
-} /* comment_start */
+} /* commentStart */
 
 /*********************************************************************/
 
@@ -234,7 +234,7 @@ static bool commentEnd(const char c0, const char c1, const int mode)
 {
 	return ((1 == mode) && ('\n' == c0)) ||
 		((2 == mode) && ('*' == c0) && ('/' == c1));
-} /* comment_end */
+} /* commentEnd */
 
 /*********************************************************************/
 
@@ -269,7 +269,7 @@ void Lexer::skipComments(void)
 		skipWhitespace();
 		skipComments();
 	}
-} /* Lexer::skip_comments */
+} /* Lexer::skipComments */
 
 /*********************************************************************/
 
@@ -306,7 +306,7 @@ void Lexer::scanToken()
 		token_list_.push_back(t);
 		++s_itr_;
 	}
-} /* Lexer::scan_token */
+} /* Lexer::scanToken */
 
 /*********************************************************************/
 
@@ -343,7 +343,7 @@ void Lexer::scanOperator()
 	token_list_.push_back(t);
 
 	++s_itr_;
-} /* Lexer::scan_operator */
+} /* Lexer::scanOperator */
 
 /*********************************************************************/
 
@@ -358,7 +358,7 @@ void Lexer::scanSymbol()
 	Token t;
 	t.setToken(Token::E_SYMBOL, begin, s_itr_, base_itr_);
 	token_list_.push_back(t);
-} /* Lexer::scan_symbol */
+} /* Lexer::scanSymbol */
 
 /*********************************************************************/
 
@@ -437,7 +437,7 @@ void Lexer::scanNumber()
          token_list_.push_back(t);
          return;
 
-} /* Lexer::scan_number */
+} /* Lexer::scanNumber */
 
 
 /*********************************************************************/
@@ -492,7 +492,7 @@ void Lexer::scanString()
 	token_list_.push_back(t);
 	++s_itr_;
 	return;
-} /* Lexer::scan_string */
+} /* Lexer::scanString */
 
 void Lexer::clear()
 {
@@ -545,7 +545,7 @@ int Lexer::insertTokenCore(const Token &t0, const Token &t1, Token &new_token)
 	}
 
 	return (match) ? 1 : -1;
-} /* Lexer::insert_token_core */
+} /* Lexer::insertTokenCore */
 
 int Lexer::insertAdditionalTokens()
 {
@@ -567,7 +567,7 @@ int Lexer::insertAdditionalTokens()
 	}
 
 	return changes++;
-} /* Lexer::insert_additional_tokens */
+} /* Lexer::insertAdditionalTokens */
 
 bool Lexer::process(const std::string &str)
 /* Beginning of everything.

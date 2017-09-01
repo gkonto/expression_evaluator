@@ -6,7 +6,6 @@
 #include <list>
 #include "lexer.hpp"
 
-
 class Parser
 {
 	public:
