@@ -1,8 +1,7 @@
 #include "parse.hpp"
 
 
-
-void Parser::display_current_state()
+void Parser::displayCurrentState()
 {
 	std::size_t i = 0;
 
@@ -21,7 +20,7 @@ void Parser::display_current_state()
 	std::cout << std::endl << std::endl;;
 }
 
-void Parser::display_token_vector()
+void Parser::displayTokenVector()
 {
 	std::size_t i = 0;
 	for (i = 0; i < token_list_.size(); i++) 
@@ -32,12 +31,12 @@ void Parser::display_token_vector()
 	std::cout << std::endl;
 }
 
-bool Parser::is_number(const Token &tok)
+bool Parser::isNumber(const Token &tok)
 {
 	return (tok.type == Token::E_NUMBER);
 }
 
-bool Parser::is_operator(const Token &tok)
+bool Parser::isOperator(const Token &tok)
 {
 	return (tok.type == Token::E_SUB ||
 		tok.type == Token::E_ADD ||
@@ -47,7 +46,7 @@ bool Parser::is_operator(const Token &tok)
 		tok.type == Token::E_POW );
 }
 
-bool Parser::is_left_associative(const Token &tok)
+bool Parser::isLeftAssociative(const Token &tok)
 {
 	return (tok.type == Token::E_SUB ||
 		tok.type == Token::E_ADD ||
@@ -56,7 +55,7 @@ bool Parser::is_left_associative(const Token &tok)
 		tok.type == Token::E_MOD );
 } /* Parser::is_left_associative */
 
-int Parser::get_precedence(Token::token_type tt)
+int Parser::getPrecedence(Token::token_type tt)
 {
 	if ( tt == Token::E_ADD || tt == Token::E_SUB) {
 		return 2;
@@ -69,20 +68,20 @@ int Parser::get_precedence(Token::token_type tt)
 	}
 } /* Parser::get_precedence */
 
-bool Parser::is_left_bracket(const Token &tok)
+bool Parser::isLeftBracket(const Token &tok)
 {
 	return (tok.type == Token::E_LBRACKET);
 } /* Parser::is_left_bracket */
 
-bool Parser::is_right_bracket(const Token &tok)
+bool Parser::isRightBracket(const Token &tok)
 {
 	return (tok.type == Token::E_RBRACKET);
 } /* Parser::is_left_bracket */
 
-bool Parser::is_stack_token_higher_or_equal_precedence(const Token &tok)
+bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok)
 {
-	int token_precedence = get_precedence(tok.type);
-	int stack_precedence = get_precedence(stack_.back().type);
+	int token_precedence = getPrecedence(tok.type);
+	int stack_precedence = getPrecedence(stack_.back().type);
 
 	if (token_precedence < stack_precedence ||
 	   	token_precedence == stack_precedence) 
@@ -93,11 +92,11 @@ bool Parser::is_stack_token_higher_or_equal_precedence(const Token &tok)
 
 } /* Parser::is_higher_or_equal_precedence */
 
-void Parser::add_operator(const Token &tok)
+void Parser::addOperator(const Token &tok)
 {
 	while (!stack_.empty() &&
-	      	is_left_associative(tok) &&
-	       	is_stack_token_higher_or_equal_precedence(tok))
+	      	isLeftAssociative(tok) &&
+	       	isStackTokenHigherOrEqualPrecedence(tok))
        	{
 		postfix_.push_back(stack_.back());
 		stack_.pop_back();
@@ -105,13 +104,13 @@ void Parser::add_operator(const Token &tok)
 	stack_.push_back(tok);
 } /* Parser::add_operator */
 
-bool Parser::front_stack_is_left_bracket()
+bool Parser::frontStackIsLeftBracket()
 {
-	return is_left_bracket(stack_.back());
+	return isLeftBracket(stack_.back());
 }
 
 
-void Parser::shunting_yard()
+void Parser::shuntingYard()
 {
 /*
  * Implementation Details:
@@ -134,34 +133,34 @@ void Parser::shunting_yard()
  * 		pop the operator onto the output queue.
  */
 	std::cout << "PARSING phase..." << std::endl;
-	display_token_vector();
+	displayTokenVector();
 	for (std::size_t i = 0; i < token_list_.size(); i++)
 	{
 		Token tok = token_list_[i];
-		if (is_number(tok)) {
+		if (isNumber(tok)) {
 			postfix_.push_back(tok);
-		} else if (is_operator(tok)) {
-			add_operator(tok);
-		} else if (is_left_bracket(tok)) {
+		} else if (isOperator(tok)) {
+			addOperator(tok);
+		} else if (isLeftBracket(tok)) {
 			stack_.push_back(tok);
-		} else if (is_right_bracket(tok)) {
+		} else if (isRightBracket(tok)) {
 			while (!stack_.empty() &&
-				!front_stack_is_left_bracket())
+				!frontStackIsLeftBracket())
 			{
 				postfix_.push_back(stack_.back());
 				stack_.pop_back();
 			}
-			if (front_stack_is_left_bracket()) {
+			if (frontStackIsLeftBracket()) {
 				stack_.pop_back();
 			}
 		}
 
-		display_current_state();
+		displayCurrentState();
 	}
 
 	while (!stack_.empty()) {
 		postfix_.push_back(stack_.back());
 		stack_.pop_back();
 	}
-	display_current_state();
+	displayCurrentState();
 }

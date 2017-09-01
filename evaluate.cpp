@@ -6,32 +6,32 @@
 #include <math.h>
 #include <sstream>
 
-static std::string double_to_string(const double value)
+static std::string doubleToString(const double value)
 {
 	std::ostringstream ss;
 	ss << value;
 	return ss.str();
 }
 
-static double string_to_double(const std::string &value)
+static double stringToDouble(const std::string &value)
 {
 	return atof(value.c_str());
 }
 
-static Token sub_tokens(const Token &left, const Token &right)
+static Token subTokens(const Token &left, const Token &right)
 {
 	//TODO simazepse to xaos kai stin add
 	Token new_tok;
-	double d_left = string_to_double(left.value);
-	double d_right = string_to_double(right.value);
+	double d_left = stringToDouble(left.value);
+	double d_right = stringToDouble(right.value);
 	double value = d_left - d_right;
 
 	new_tok.type  = Token::E_NUMBER;
-	new_tok.value = double_to_string(value);
+	new_tok.value = doubleToString(value);
 	return new_tok;
 }
 
-static Token add_tokens(const Token &left, const Token &right)
+static Token addTokens(const Token &left, const Token &right)
 {
 	Token new_tok;
 	double d_left = atof(left.value.c_str());
@@ -39,11 +39,11 @@ static Token add_tokens(const Token &left, const Token &right)
 	double value = d_left + d_right;
 
 	new_tok.type  = Token::E_NUMBER;
-	new_tok.value = double_to_string(value);
+	new_tok.value = doubleToString(value);
 	return new_tok;
 }
 
-static Token mul_tokens(const Token &left, const Token &right)
+static Token mulTokens(const Token &left, const Token &right)
 {
 	//TODO make fun
 	Token new_tok;
@@ -52,11 +52,11 @@ static Token mul_tokens(const Token &left, const Token &right)
 	double value = d_left * d_right;
 
 	new_tok.type = Token::E_NUMBER;
-	new_tok.value = double_to_string(value);
+	new_tok.value = doubleToString(value);
 	return new_tok;
 }
 
-static Token div_tokens(const Token &left, const Token &right)
+static Token divTokens(const Token &left, const Token &right)
 {
 	Token new_tok;
 	double d_left = atof(left.value.c_str());
@@ -64,11 +64,11 @@ static Token div_tokens(const Token &left, const Token &right)
 	double value = d_left / d_right;
 
 	new_tok.type = Token::E_NUMBER;
-	new_tok.value = double_to_string(value);
+	new_tok.value = doubleToString(value);
 	return new_tok;
 }
 
-static Token pow_tokens(const Token &left, const Token &right)
+static Token powTokens(const Token &left, const Token &right)
 {
 	Token new_tok;
 	double d_left = atof(left.value.c_str());
@@ -76,30 +76,27 @@ static Token pow_tokens(const Token &left, const Token &right)
 	double value = pow(d_left, d_right);
 
 	new_tok.type = Token::E_NUMBER;
-	new_tok.value = double_to_string(value);
+	new_tok.value = doubleToString(value);
 	return new_tok;
 }
 
 
 static Token calc(const Token &left, const Token &right, const Token &operat)
 {
-
 	if (operat.type ==  Token::E_ADD) {
-		return add_tokens(left, right);
+		return addTokens(left, right);
 	} else if (operat.type == Token::E_SUB) {
-		return sub_tokens(left, right);
+		return subTokens(left, right);
 	} else if (operat.type == Token::E_MUL) {
-		return mul_tokens(left, right);
+		return mulTokens(left, right);
 	} else if (operat.type == Token::E_DIV) {
-		return div_tokens(left, right);
+		return divTokens(left, right);
 	} else if (operat.type == Token::E_POW) {
-		return pow_tokens(left, right);
+		return powTokens(left, right);
 	}
-
-
 }
 
-void Evaluator::display_stack()
+void Evaluator::displayStack()
 {
 	std::cout << "stack_: " << std::endl;
 
@@ -138,7 +135,7 @@ std::vector<Token> Evaluator::evaluate()
 			Token new_val = calc(left, right, tmp);
 			stack_.push_back(new_val);
 		}
-		display_stack();
+		displayStack();
 /*		for (int i = 0; i < stack_.size() ; i++)*/
 /*		{*/
 /*			std::cout << stack_[i].value << std::endl;*/
