@@ -167,7 +167,7 @@ std::string Token::toStr(token_type t)
 		case E_DIV         : return "/";
 		case E_MUL         : return "*";
 		case E_MOD         : return "%";
-		case E_POW         : return "^";
+		case E_POW         : return "**";
 		default            : return "UNKNOWN";
 
 	}
@@ -320,6 +320,24 @@ void Lexer::scanOperator()
 {
 	Token t;
 	
+	if (!isEnd(s_itr_ + 1))
+	{
+		Token::token_type ttype = Token::E_NONE;
+
+		char c0 = s_itr_[0];
+		char c1 = s_itr_[1];
+
+		if ((c0 == '*') && (c1 == '*')) ttype = Token::E_POW;
+		
+		if (Token::E_NONE != ttype)
+		{
+			t.setToken(ttype, s_itr_, s_itr_ + 2, base_itr_);
+			token_list_.push_back(t);
+			s_itr_ += 2;
+			return;
+		}
+	}
+
 	t.setToken(Token::token_type(*s_itr_),s_itr_,s_itr_ + 1,base_itr_);
 
 	token_list_.push_back(t);

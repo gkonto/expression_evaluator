@@ -72,11 +72,11 @@ int main(void)
 	evalExpression("1.0+3.0/2.0", 1.0+3.0/2.0);
 	evalExpression("1.0+(3.0*2.0-4.0)", 1.0+(3.0*2.0-4.0));
 	evalExpression("1.0-(3.0*2.0+4.0)", 1.0-(3.0*2.0+4.0));
-	evalExpression("2*3^2)", 2*pow(3,2));
-	evalExpression("2^3^2)", 512);
-	evalExpression("2 ^ (-1)", pow(2, -1));
-	evalExpression("2 ^ (-0.2 + 0.2)", pow(2, -0.2+0.2));
-	evalExpression("0^2", pow(0, 2));
+	evalExpression("2*3**2)", 2*pow(3,2));
+	evalExpression("2**3**2)", 512);
+	evalExpression("2 ** (-1)", pow(2, -1));
+	evalExpression("2 ** (-0.2 + 0.2)", pow(2, -0.2+0.2));
+	evalExpression("0**2", pow(0, 2));
 
 	std::cout << "ALL TESTS PASSED" << std::endl;
 	return 0;
