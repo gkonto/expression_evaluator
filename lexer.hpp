@@ -42,7 +42,6 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
-#include <deque>
 #include <exception>
 #include <limits>
 #include <map>
@@ -119,9 +118,6 @@ struct Token
 class Lexer
 {
 	public:
-		typedef std::deque<Token> token_list_t;
-		typedef std::deque<Token>::iterator token_list_itr_t;
-
 		Lexer():base_itr_(0), s_itr_(0), s_end_(0), expression_("")
 		{
 			clear();
