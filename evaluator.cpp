@@ -1,11 +1,12 @@
 #include <vector>
 #include <list>
 #include <string.h>
-#include "evaluate.hpp"
 #include <iostream>
 #include <math.h>
 #include <sstream>
 #include <assert.h>
+
+#include "evaluator.hpp"
 
 static std::string doubleToString(const double value)
 {

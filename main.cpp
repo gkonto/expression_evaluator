@@ -7,8 +7,8 @@
 #include <iostream>
 
 #include "lexer.hpp"
-#include "parse.hpp"
-#include "evaluate.hpp"
+#include "parser.hpp"
+#include "evaluator.hpp"
 /*----------------------------------------------*/
 static double evaluate(const std::string &expr)
 {
