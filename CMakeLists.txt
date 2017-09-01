@@ -6,13 +6,13 @@ cmake_policy(SET CMP0000 OLD)
 
 set(HEADERS
     lexer.hpp
-    parse.hpp
-    evaluate.hpp)
+    parser.hpp
+    evaluator.hpp)
 
 set(SOURCES 
     main.cpp
-    parse.cpp
-    evaluate.cpp
+    parser.cpp
+    evaluator.cpp
     lexer.cpp)
 
 ADD_EXECUTABLE(expression_evaluator ${HEADERS} ${SOURCES})
