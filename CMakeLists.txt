@@ -3,8 +3,16 @@ PROJECT(expression_evaluator)
 add_definitions("-Wall")
 cmake_policy(SET CMP0002 OLD)
 cmake_policy(SET CMP0000 OLD)
-ADD_EXECUTABLE(expression_evaluator  main.cpp)
-ADD_EXECUTABLE(expression_evaluator  parser.cpp)
-ADD_EXECUTABLE(expression_evaluator  evaluator.cpp)
-ADD_EXECUTABLE(expression_evaluator  lexer.cpp)
 
+set(HEADERS
+    lexer.hpp
+    parse.hpp
+    evaluate.hpp)
+
+set(SOURCES 
+    main.cpp
+    parse.cpp
+    evaluate.cpp
+    lexer.cpp)
+
+ADD_EXECUTABLE(expression_evaluator ${HEADERS} ${SOURCES})
