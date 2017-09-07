@@ -5,13 +5,17 @@
 #include <math.h>
 #include <sstream>
 #include <assert.h>
+#include <iomanip>
 
 #include "evaluator.hpp"
 
+#define _USE_MATH_DEFINES
+
 static std::string doubleToString(const double value)
 {
+	//FIXME ti kano edo ? poso prepei na einai to precision????
 	std::ostringstream ss;
-	ss << value;
+	ss << std::setprecision(10) << value;
 	return ss.str();
 } /* doubleToString */
 
@@ -36,8 +40,8 @@ static Token subTokens(const Token &left, const Token &right)
 static Token addTokens(const Token &left, const Token &right)
 {
 	Token new_tok;
-	double d_left = atof(left.value.c_str());
-	double d_right = atof(right.value.c_str());
+	double d_left = stringToDouble(left.value.c_str());
+	double d_right = stringToDouble(right.value.c_str());
 	double value = d_left + d_right;
 
 	new_tok.type  = Token::E_NUMBER;
@@ -49,8 +53,8 @@ static Token mulTokens(const Token &left, const Token &right)
 {
 	//TODO make fun
 	Token new_tok;
-	double d_left = atof(left.value.c_str());
-	double d_right = atof(right.value.c_str());
+	double d_left = stringToDouble(left.value.c_str());
+	double d_right = stringToDouble(right.value.c_str());
 	double value = d_left * d_right;
 
 	new_tok.type = Token::E_NUMBER;
@@ -61,8 +65,8 @@ static Token mulTokens(const Token &left, const Token &right)
 static Token divTokens(const Token &left, const Token &right)
 {
 	Token new_tok;
-	double d_left = atof(left.value.c_str());
-	double d_right = atof(right.value.c_str());
+	double d_left = stringToDouble(left.value.c_str());
+	double d_right = stringToDouble(right.value.c_str());
 	double value = d_left / d_right;
 
 	new_tok.type = Token::E_NUMBER;
@@ -73,8 +77,8 @@ static Token divTokens(const Token &left, const Token &right)
 static Token powTokens(const Token &left, const Token &right)
 {
 	Token new_tok;
-	double d_left = atof(left.value.c_str());
-	double d_right = atof(right.value.c_str());
+	double d_left = stringToDouble(left.value.c_str());
+	double d_right = stringToDouble(right.value.c_str());
 	double value = pow(d_left, d_right);
 
 	new_tok.type = Token::E_NUMBER;
@@ -83,7 +87,7 @@ static Token powTokens(const Token &left, const Token &right)
 } /* powTokens */
 
 
-static Token calc(const Token &left, const Token &right, const Token &operat)
+static Token calcBinaryExpr(const Token &left, const Token &right, const Token &operat)
 {
 	Token t;
 
@@ -108,7 +112,36 @@ static Token calc(const Token &left, const Token &right, const Token &operat)
 		assert(t.type == Token::E_ERROR);
 		return t;
 	}
-} /* calc */
+} /* calcBinaryExpr */
+
+static Token calcFunExpr(const Token &fun, const Token &tok)
+{
+	Token t;
+	//TODO strcmp??
+	//tolower
+	//find a way to represent all funs
+	if (fun.value == "cos") {
+		t.type = Token::E_NUMBER;
+		double value = stringToDouble(tok.value);
+		t.value = doubleToString(cos(value));
+
+	} else if (fun.value == "sin") {
+		t.type = Token::E_NUMBER;
+		double value = stringToDouble(tok.value);
+
+		t.value = doubleToString(sin(value));
+
+	} else if (fun.value == "log") {
+		t.type = Token::E_NUMBER;
+		double value = stringToDouble(tok.value);
+		t.value = doubleToString(log(value));
+	} else {
+		t.type = Token::E_ERROR;
+		std::cout << "Should not be here calcFunExpr" << std::endl;
+		assert(t.type == Token::E_ERROR);
+	}
+	return t;
+}
 
 void Evaluator::displayStack()
 {
@@ -146,9 +179,18 @@ std::vector<Token> Evaluator::evaluate()
 				left.type = Token::E_NUMBER;
 				left.value = '0';
 			}
-			Token new_val = calc(left, right, tmp);
+			Token new_val = calcBinaryExpr(left, right, tmp);
+			stack_.push_back(new_val);
+		} else if (tmp.type == Token::E_SYMBOL && (tmp.value == "cos" || tmp.value == "sin" || tmp.value == "log")) {
+			//TODO de maresei edo. ti tha ginei an pairnei perissotera tokens apo ena ?
+			//TODO pos tha ginei na diorthoso ena terastio loop
+			Token next_tok = stack_.back();
+			stack_.pop_back();
+
+			Token new_val = calcFunExpr(tmp, next_tok);
 			stack_.push_back(new_val);
 		}
+
 		displayStack();
 /*		for (int i = 0; i < stack_.size() ; i++)*/
 /*		{*/
