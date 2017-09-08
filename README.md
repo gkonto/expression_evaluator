@@ -21,7 +21,7 @@ How to run the evaluator:
 	2) just type ./expression_evaluator
 
 The evaluator can take 3 arguments:
-	--help                 :shows the available arguments with description
+	--help                 :shows the available arguments with description [NOT WORKING YET]
 
 	-f [filename]          : This argument followed by a file(full files path) 
 			         can calculate all the expressions of the file.
@@ -29,7 +29,7 @@ The evaluator can take 3 arguments:
 			         (line1): 'expression'		'value'
 			         (line2): 'expression2'		'value2'
 
-	-d [no, yes]           : Shows the detailed calculation from the beginning to the end. (default : yes)
+	-d [no, yes]           : Shows the detailed calculation from the beginning to the end. (default : yes) [NOT WORKING YET]
 	-t [run, do_not_run]   : Runs the built in expressions (just for testing). (default : run)
 
 
