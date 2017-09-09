@@ -16,12 +16,22 @@
 bool SHOW_DETAILED_CALCULATION = true;
 bool RUN_TEST_EXPRESSIONS = false;
 
+typedef enum parseErrorTypes {
+	E_NONE = 0,
+	E_INVALID_ARG,
+	E_NO_ARG_GIVEN,
+	JUST_SHOW_HELP
+} parseErrorTypes;
+
+
 static bool doubleEquals(const double a, const double  b, const double epsilon = 0.001)
 {
 	return ((abs(a)-abs(b)) < epsilon);
-}
+} /* doubleEquals */
 
+/*----------------------------------------------*/
 
+/*----------------------------------------------*/
 static double evaluate(const std::string &expr)
 {
 	//lexer
@@ -45,6 +55,8 @@ static double evaluate(const std::string &expr)
 } /* evaluate */
 
 /*----------------------------------------------*/
+
+/*----------------------------------------------*/
 static void a_assert(const std::string &expr, double value)
 {
 	double eval = evaluate(expr);
@@ -58,21 +70,14 @@ static void a_assert(const std::string &expr, double value)
 } /* a_assert */
 
 /*----------------------------------------------*/
+
+/*----------------------------------------------*/
 static int evalExpression(const std::string &expr, double value)
 {
 	a_assert(expr, value);
 	std::cout << "------------------------------" << std::endl;
 	return 0;
 } /* eval_expression */
-
-/*----------------------------------------------*/
-
-/*----------------------------------------------*/
-typedef enum parseErrorTypes {
-	E_NONE = 0,
-	E_INVALID_ARG,
-	E_NO_ARG_GIVEN
-} parseErrorTypes;
 
 /*----------------------------------------------*/
 
@@ -92,6 +97,9 @@ static int getFileWithRandomExpression(const char *argv, std::ifstream &file )
 	return E_NONE;
 }
 
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
 static int configureDetailedInfo(const char *argv)
 {
 	if (!strcmp(argv, "no")) {
@@ -104,6 +112,9 @@ static int configureDetailedInfo(const char *argv)
 	return E_NONE;
 }
 
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
 static int configureRunTestExpressions(const char *argv)
 {
 	if (!strcmp(argv, "run")) {
@@ -116,9 +127,33 @@ static int configureRunTestExpressions(const char *argv)
 	return E_NONE;
 }
 
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
+static void showHelpSummary() {
+	std::cout <<"\t--help\t\t      : shows the available arguments with description" <<std::endl << std::endl;
+	std::cout <<"\t-f [filename]\t      : This argument followed by a file (full file's path)\n\
+			        can calcualte all the expression of the file.\n\
+			        The file (.txt) should have the following format:\n\
+			        (line1): 'expression1'\t'value'\n\
+			        (line2): 'expression2'\t'value'" <<std::endl << std::endl; 
+	std::cout <<"\t -d [no, yes]\t      : Show the detailed calculation from the beginning to the end. (default->yes) [NOT WORKING YET]" << std::endl << std::endl;
+	std::cout <<"\t -t [run, do_not_run] : Runs the built in expressions (just for testing). (default : run)" << std::endl << std::endl;
+}
+
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
 static int parseArgs(const int argc, char **argv, std::ifstream &file)
 {
 	int err_type = E_NONE;
+	for (int i = 0; i < argc; i++) {
+		if (!strcmp(argv[i], "--help")) {
+			showHelpSummary();
+			return  JUST_SHOW_HELP;
+		}
+
+	}
 
 	for (int i = 0; i < argc; i++) {
 		if (!strcmp(argv[i], "-f")) {
@@ -148,6 +183,9 @@ static int parseArgs(const int argc, char **argv, std::ifstream &file)
 	return err_type;
 }
 
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
 bool isParseError(int err_type)
 {
 	switch (err_type) {
@@ -156,12 +194,17 @@ bool isParseError(int err_type)
 		case E_INVALID_ARG:
 			std::cout << "Invalid arguments given!" << std::endl;
 			return true;
+		case JUST_SHOW_HELP:
+			return true;
 		default:
 			assert(true);
 	}
 	return false;
 }
 
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
 static int runDefaultTests()
 {
 //If expression added, update the counter!
@@ -191,6 +234,9 @@ static int runDefaultTests()
 	return counter;
 }
 
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
 static void runTestsFromFile(std::ifstream &file, int &counter)
 {
 	std::string line;
@@ -209,6 +255,7 @@ static void runTestsFromFile(std::ifstream &file, int &counter)
 		counter++;
 	}
 }
+
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
