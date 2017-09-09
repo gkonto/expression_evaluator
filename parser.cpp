@@ -1,7 +1,6 @@
 #include "parser.hpp"
 #include "tools.hpp"
 
-
 void Parser::displayCurrentState()
 {
 	std::size_t i = 0;
@@ -167,23 +166,14 @@ void Parser::shuntingYard()
 				!frontStackIsLeftBracket())
 			{
 				postfix_.push_back(stack_.back());
-				safePopBack(stack_);
-/*				if (!stack_.empty()) {*/
-/*					stack_.pop_back();*/
-/*				}*/
+				safePopBack<Token>(stack_);
 			}
 
 			if (frontStackIsLeftBracket()) {
-				safePopBack(stack_);
-/*				if (!stack_.empty()) {*/
-/*					stack_.pop_back();*/
-/*				}*/
+				safePopBack<Token>(stack_);
 				if (isFun(stack_.back())) {
 					postfix_.push_back(stack_.back());
-					safePopBack(stack_);
-/*					if (!stack_.empty()) {*/
-/*						stack_.pop_back();*/
-/*					}*/
+					safePopBack<Token>(stack_);
 				}
 			}
 
