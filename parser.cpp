@@ -6,7 +6,7 @@ void Parser::displayCurrentState()
 {
 	std::size_t i = 0;
 
-	std::cout << "Stack   | ";
+	std::cout << "Stack   | "; 
 	for (i = 0; i < stack_.size(); i++) {
 		std::cout << stack_[i].value;
 		std::cout << " ";
@@ -162,19 +162,31 @@ void Parser::shuntingYard()
 		} else if (isLeftBracket(tok) || isFun(tok)) {
 			stack_.push_back(tok);
 		} else if (isRightBracket(tok)) {
+
 			while (!stack_.empty() &&
 				!frontStackIsLeftBracket())
 			{
 				postfix_.push_back(stack_.back());
-				stack_.pop_back();
+				safePopBack(stack_);
+/*				if (!stack_.empty()) {*/
+/*					stack_.pop_back();*/
+/*				}*/
 			}
+
 			if (frontStackIsLeftBracket()) {
-				stack_.pop_back();
+				safePopBack(stack_);
+/*				if (!stack_.empty()) {*/
+/*					stack_.pop_back();*/
+/*				}*/
 				if (isFun(stack_.back())) {
 					postfix_.push_back(stack_.back());
-					stack_.pop_back();
+					safePopBack(stack_);
+/*					if (!stack_.empty()) {*/
+/*						stack_.pop_back();*/
+/*					}*/
 				}
 			}
+
 		}
 
 		if (SHOW_DETAILED_CALCULATION) {
