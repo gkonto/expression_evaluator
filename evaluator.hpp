@@ -1,5 +1,6 @@
 #ifndef EVALUATE_HPP
 #define EVALUATE_HPP
+#pragma once
 
 #include <iostream>
 #include <vector>

@@ -9,35 +9,24 @@
 #include <fstream>
 #include <sstream>
 
+
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "evaluator.hpp"
-/*----------------------------------------------*/
-bool SHOW_DETAILED_CALCULATION = true;
-bool RUN_TEST_EXPRESSIONS = false;
-
-typedef enum parseErrorTypes {
-	E_NONE = 0,
-	E_INVALID_ARG,
-	E_NO_ARG_GIVEN,
-	JUST_SHOW_HELP
-} parseErrorTypes;
-
-
-static bool doubleEquals(const double a, const double  b, const double epsilon = 0.001)
-{
-	return ((abs(a)-abs(b)) < epsilon);
-} /* doubleEquals */
-
+#include "tools.hpp"
 /*----------------------------------------------*/
 
-/*----------------------------------------------*/
+bool SHOW_DETAILED_CALCULATION;
+bool RUN_TEST_EXPRESSIONS ;
+
 static double evaluate(const std::string &expr)
 {
 	//lexer
 	Lexer lex;
 	lex.process(expr);
-	lex.display();
+	if (SHOW_DETAILED_CALCULATION) {
+		lex.display();
+	}
 	std::vector<Token> token_list = lex.getTokens();
 	
 	//parse
@@ -50,7 +39,9 @@ static double evaluate(const std::string &expr)
 	std::vector<Token> stack_ = eval.evaluate();
 	double value = atof(stack_[0].value.c_str());
 
-	std::cout << "Calculated Number is: " << value << std::endl;
+	if (SHOW_DETAILED_CALCULATION) {
+		std::cout << "Calculated Number is: " << value << std::endl;
+	}
 	return value;
 } /* evaluate */
 
@@ -61,7 +52,9 @@ static void a_assert(const std::string &expr, double value)
 {
 	double eval = evaluate(expr);
 
+	if (SHOW_DETAILED_CALCULATION) {
 	std::cout << "Comparing expr : " << eval << " with value : " << value << std::endl;
+	}
 
 	if (!doubleEquals(eval, value)) {
 		std::cout << "Test Failed in expression: " << expr << std::endl;
@@ -75,7 +68,9 @@ static void a_assert(const std::string &expr, double value)
 static int evalExpression(const std::string &expr, double value)
 {
 	a_assert(expr, value);
-	std::cout << "------------------------------" << std::endl;
+	if (SHOW_DETAILED_CALCULATION) {
+		std::cout << "------------------------------" << std::endl;
+	}
 	return 0;
 } /* eval_expression */
 
@@ -265,6 +260,8 @@ int main(int argc, char **argv)
 	std::ifstream file;
 	int err_type = E_NONE;
 	int counter = 0;	
+	SHOW_DETAILED_CALCULATION = true;
+	RUN_TEST_EXPRESSIONS = false;
 
 	err_type = parseArgs(argc, argv, file);
 

@@ -29,8 +29,8 @@ The evaluator can take 3 arguments:
 			         (line1): 'expression'		'value'
 			         (line2): 'expression2'		'value2'
 
-	-d [no, yes]           : Shows the detailed calculation from the beginning to the end. (default : yes) [NOT WORKING YET]
-	-t [run, do_not_run]   : Runs the built in expressions (just for testing). (default : run)
+	-d [no, yes]           : Shows the detailed calculation from the beginning to the end. (default : yes)
+	-t [run, do_not_run]   : Runs the built in expressions (just for testing). (default : do_not_run)
 
 
 IMPORTANT NOTE: The evaluator is still under testing.

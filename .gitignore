@@ -1,4 +1,8 @@
 build
 tags
 .gitignore
+core
+a.out
+AUTOPROSEXE.cpp
+random_expressions.txt
 

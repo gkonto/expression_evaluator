@@ -36,6 +36,7 @@
 
 #ifndef LEXER_HPP
 #define LEXER_HPP
+#pragma once
 
 #include <algorithm>
 #include <cctype>

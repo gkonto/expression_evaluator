@@ -1,4 +1,5 @@
 #include "parser.hpp"
+#include "tools.hpp"
 
 
 void Parser::displayCurrentState()
@@ -147,8 +148,10 @@ void Parser::shuntingYard()
  * 	while there are still operator tokens on the stack:
  * 		pop the operator onto the output queue.
  */
-	std::cout << "PARSING phase..." << std::endl;
-	displayTokenVector();
+	if (SHOW_DETAILED_CALCULATION) {
+		std::cout << "PARSING phase..." << std::endl;
+		displayTokenVector();
+	}
 	for (std::size_t i = 0; i < token_list_.size(); i++)
 	{
 		Token tok = token_list_[i];
@@ -174,12 +177,16 @@ void Parser::shuntingYard()
 			}
 		}
 
-		displayCurrentState();
+		if (SHOW_DETAILED_CALCULATION) {
+			displayCurrentState();
+		}
 	}
 
 	while (!stack_.empty()) {
 		postfix_.push_back(stack_.back());
 		stack_.pop_back();
 	}
-	displayCurrentState();
+	if (SHOW_DETAILED_CALCULATION) {
+		displayCurrentState();
+	}
 } /* Parser::shuntingYard */

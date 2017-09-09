@@ -7,7 +7,9 @@
 #include <assert.h>
 #include <iomanip>
 
+
 #include "evaluator.hpp"
+#include "tools.hpp"
 
 #define _USE_MATH_DEFINES
 
@@ -156,7 +158,9 @@ void Evaluator::displayStack()
 
 std::vector<Token> Evaluator::evaluate()
 {
-	std::cout << "Entered evaluate phase..." << std::endl;
+	if (SHOW_DETAILED_CALCULATION) {
+		std::cout << "Entered evaluate phase..." << std::endl;
+	}
 	while(!postfix_.empty()) {
 
 		Token tmp = postfix_.front();
@@ -191,7 +195,9 @@ std::vector<Token> Evaluator::evaluate()
 			stack_.push_back(new_val);
 		}
 
-		displayStack();
+		if (SHOW_DETAILED_CALCULATION) {
+			displayStack();
+		}
 /*		for (int i = 0; i < stack_.size() ; i++)*/
 /*		{*/
 /*			std::cout << stack_[i].value << std::endl;*/
