@@ -6,7 +6,7 @@
 
 bool doubleEquals(const double a, const double  b, const double epsilon)
 {
-	return ((std::abs(a)-std::abs(b)) < epsilon);
+	return ((std::abs(a - b)) < epsilon);
 } /* doubleEquals */
 
 /*----------------------------------------------*/

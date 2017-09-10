@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
 
 #include "lexer.hpp"
@@ -18,6 +19,9 @@
 
 bool SHOW_DETAILED_CALCULATION;
 bool RUN_TEST_EXPRESSIONS ;
+int FAILED_EXPRESSIONS;
+int PASSED_EXPRESSIONS;
+
 
 static double evaluate(const std::string &expr)
 {
@@ -40,7 +44,8 @@ static double evaluate(const std::string &expr)
 	double value = atof(stack_[0].value.c_str());
 
 	if (SHOW_DETAILED_CALCULATION) {
-		std::cout << "Calculated Number is: " << value << std::endl;
+		std::cout << std::setprecision(20) <<"Calculated Number is: " << value << std::endl;
+/*		std::cout << "Calculated Number is: " << value << std::endl;*/
 	}
 	return value;
 } /* evaluate */
@@ -48,30 +53,35 @@ static double evaluate(const std::string &expr)
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
-static void a_assert(const std::string &expr, double value)
+static int isEqual(const std::string &expr, double value)
 {
 	double eval = evaluate(expr);
 
 	if (SHOW_DETAILED_CALCULATION) {
-	std::cout << "Comparing expr : " << eval << " with value : " << value << std::endl;
+		std::cout << std::setprecision(20) << "Comparing expr : " << eval << " with value : " << value << std::endl;
 	}
 
 	if (!doubleEquals(eval, value)) {
-		std::cout << "Test Failed in expression: " << expr << std::endl;
-		assert(eval == value);
+
+		if (SHOW_DETAILED_CALCULATION) {
+			std::cout << "Test Failed in expression: " << expr << std::endl;
+		}
+/*		assert(eval == value);*/
+		return 1;
 	}
-} /* a_assert */
+	return 0;
+} /* isEqual */
 
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
 static int evalExpression(const std::string &expr, double value)
 {
-	a_assert(expr, value);
+	int ret = isEqual(expr, value);
 	if (SHOW_DETAILED_CALCULATION) {
 		std::cout << "------------------------------" << std::endl;
 	}
-	return 0;
+	return ret;
 } /* eval_expression */
 
 /*----------------------------------------------*/
@@ -80,13 +90,10 @@ static int evalExpression(const std::string &expr, double value)
 static int getFileWithRandomExpression(const char *argv, std::ifstream &file )
 {
 	file.open(argv, std::ifstream::in);
-	std::cout << "getFileWithRandomExpression 1" << std::endl;
 
 	if (file.is_open()) {
-		std::cout << "getFileWithRandomExpression 2" << std::endl;
 		return E_NONE;
 	} else {
-		std::cout << "getFileWithRandomExpression 3" << std::endl;
 		return E_INVALID_ARG;
 	}
 	return E_NONE;
@@ -200,11 +207,8 @@ bool isParseError(int err_type)
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
-static int runDefaultTests()
+static void runDefaultTests()
 {
-//If expression added, update the counter!
-	int counter = 20;
-
 	evalExpression("+14.0", 14);
 	evalExpression("-14.0", -14);
 	evalExpression("+14", 14);
@@ -225,29 +229,38 @@ static int runDefaultTests()
 	evalExpression("2 ** (-1)", pow(2, -1));
 	evalExpression("2 ** (-0.2 + 0.2)", pow(2, -0.2+0.2));
 	evalExpression("0**2", pow(0, 2));
-
-	return counter;
 }
 
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
-static void runTestsFromFile(std::ifstream &file, int &counter)
+static void runTestsFromFile(std::ifstream &file)
 {
 	std::string line;
 	std::string expression;
 	double value = 0;
+	std::fstream failed;
+	failed.open("failed.txt", std::fstream::in | std::fstream::out | std::fstream::app );
 
 	while (std::getline(file, line))
 	{
+		#ifdef DBG	
+			std::cout << "Line : " << PASSED_EXPRESSIONS + FAILED_EXPRESSIONS + 1 << std::endl;
+		#endif
 		std::istringstream iss(line);
 		if (!(iss>>expression>>value)) {
-			std::cout << "Invalid line found in line number: "<< counter+1 << std::endl;
+			std::cout << "Invalid line found in line number: "<< FAILED_EXPRESSIONS + PASSED_EXPRESSIONS+1 << std::endl;
 		} else {
-			evalExpression(expression, value);
+			int ret = evalExpression(expression, value);
+			if (ret == 1) {
+				failed << expression << "\t\t\t" << value << std::endl;
+				FAILED_EXPRESSIONS++;
+			} else {
+				PASSED_EXPRESSIONS++;
+			}
+
 		}
 
-		counter++;
 	}
 }
 
@@ -259,9 +272,10 @@ int main(int argc, char **argv)
 
 	std::ifstream file;
 	int err_type = E_NONE;
-	int counter = 0;	
 	SHOW_DETAILED_CALCULATION = true;
 	RUN_TEST_EXPRESSIONS = false;
+	FAILED_EXPRESSIONS = 0;
+	PASSED_EXPRESSIONS = 0;
 
 	err_type = parseArgs(argc, argv, file);
 
@@ -272,16 +286,16 @@ int main(int argc, char **argv)
 
 	if (RUN_TEST_EXPRESSIONS)
        	{
-		counter = runDefaultTests();
+		runDefaultTests();
 	}
 
 	if (file.is_open())
 	{
-		runTestsFromFile(file, counter);
+		runTestsFromFile(file);
 	}
 
-	std::cout << "Tested " << counter << " expressions" << std::endl;
-	std::cout << "ALL TESTS PASSED" << std::endl;
+	std::cout << "Tested " << PASSED_EXPRESSIONS + FAILED_EXPRESSIONS << " expressions" << std::endl;
+	std::cout << "PASSED " << PASSED_EXPRESSIONS << std::endl;
 
 	return 0;
 
