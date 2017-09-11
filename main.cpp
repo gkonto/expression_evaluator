@@ -41,7 +41,12 @@ static double evaluate(const std::string &expr)
 	//evaluator
 	Evaluator eval(postfix);
 	std::vector<Token> stack_ = eval.evaluate();
-	double value = atof(stack_[0].value.c_str());
+	double value = 0;
+	if (!stack_.empty()) {
+		value = atof(stack_[0].value.c_str());
+	} else {
+		std::cout << "STACK IS EMPTY, INVALID EXPRESSION!" << std::endl;
+	}
 
 	if (SHOW_DETAILED_CALCULATION) {
 		std::cout << std::setprecision(20) <<"Calculated Number is: " << value << std::endl;
@@ -209,6 +214,7 @@ bool isParseError(int err_type)
 /*----------------------------------------------*/
 static void runDefaultTests()
 {
+	evalExpression("", 0);
 	evalExpression("+14.0", 14);
 	evalExpression("-14.0", -14);
 	evalExpression("+14", 14);
@@ -276,6 +282,7 @@ int main(int argc, char **argv)
 	RUN_TEST_EXPRESSIONS = false;
 	FAILED_EXPRESSIONS = 0;
 	PASSED_EXPRESSIONS = 0;
+	clock_t begin = clock();
 
 	err_type = parseArgs(argc, argv, file);
 
@@ -296,6 +303,8 @@ int main(int argc, char **argv)
 
 	std::cout << "Tested " << PASSED_EXPRESSIONS + FAILED_EXPRESSIONS << " expressions" << std::endl;
 	std::cout << "PASSED " << PASSED_EXPRESSIONS << std::endl;
+	clock_t end = clock();
+	std::cout << double(end -begin) / CLOCKS_PER_SEC << std::endl;
 
 	return 0;
 
