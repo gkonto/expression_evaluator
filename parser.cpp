@@ -1,11 +1,11 @@
 #include "parser.hpp"
-
+#include "tools.hpp"
 
 void Parser::displayCurrentState()
 {
 	std::size_t i = 0;
 
-	std::cout << "Stack   | ";
+	std::cout << "Stack   | "; 
 	for (i = 0; i < stack_.size(); i++) {
 		std::cout << stack_[i].value;
 		std::cout << " ";
@@ -57,6 +57,7 @@ bool Parser::isLeftAssociative(const Token &tok)
 
 int Parser::getPrecedence(Token::token_type tt)
 {
+	//TODO save in the Token Struct the precedence !
 	if ( tt == Token::E_ADD || tt == Token::E_SUB) {
 		return 2;
 	} else if ( tt == Token::E_MUL || tt == Token::E_DIV || tt == Token::E_MOD) {
@@ -77,6 +78,20 @@ bool Parser::isRightBracket(const Token &tok)
 {
 	return (tok.type == Token::E_RBRACKET);
 } /* Parser::isRightBracket */
+
+bool Parser::isFun(const Token &tok)
+{
+	//TODO to lower
+	//strcmp??
+	if (tok.type == Token::E_SYMBOL) {
+		return (tok.value == "cos" ||
+			tok.value == "sin" ||
+			tok.value == "log");
+	} else {
+		return false;
+	}
+}
+
 
 bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok)
 {
@@ -106,6 +121,10 @@ void Parser::addOperator(const Token &tok)
 
 bool Parser::frontStackIsLeftBracket()
 {
+	#ifdef DBG
+		std::cout << "Parser::frontStackIsLeftBracket" << std::endl;
+		std::cout << isLeftBracket(stack_.back()) << std::endl;
+	#endif
 	return isLeftBracket(stack_.back());
 } /* Parser::frontStackIsLeftBracket */
 
@@ -132,35 +151,82 @@ void Parser::shuntingYard()
  * 	while there are still operator tokens on the stack:
  * 		pop the operator onto the output queue.
  */
-	std::cout << "PARSING phase..." << std::endl;
-	displayTokenVector();
+	if (SHOW_DETAILED_CALCULATION) {
+		std::cout << "PARSING phase..." << std::endl;
+		displayTokenVector();
+	}
 	for (std::size_t i = 0; i < token_list_.size(); i++)
 	{
+		#ifdef DBG
+			std::cout << "Entered loop" << std::endl;
+		#endif
 		Token tok = token_list_[i];
-		if (isNumber(tok)) {
+		if (isNumber(tok) ) {
 			postfix_.push_back(tok);
 		} else if (isOperator(tok)) {
 			addOperator(tok);
-		} else if (isLeftBracket(tok)) {
+		} else if (isLeftBracket(tok) || isFun(tok)) {
+
 			stack_.push_back(tok);
 		} else if (isRightBracket(tok)) {
+			#ifdef DBG
+				std::cout << "entered WHILE" << std::endl;
+			#endif
 			while (!stack_.empty() &&
 				!frontStackIsLeftBracket())
 			{
 				postfix_.push_back(stack_.back());
-				stack_.pop_back();
-			}
-			if (frontStackIsLeftBracket()) {
-				stack_.pop_back();
-			}
-		}
+				safePopBack<Token>(stack_);
 
-		displayCurrentState();
+				#ifdef DBG
+					std::cout << "JUST OUT OF STACK" << std::endl;
+				#endif
+
+			}
+
+
+			
+			#ifdef DBG
+				std::cout << "ENDED while" << std::endl;
+			#endif
+
+			if (frontStackIsLeftBracket()) {
+				safePopBack<Token>(stack_);
+				#ifdef DBG
+					std::cout << "JUST AFTER while" << std::endl;
+				#endif
+
+				if (!stack_.empty() && isFun(stack_.back())) {
+
+					#ifdef DBG
+						std::cout << "isfun" << std::endl;
+					#endif
+					postfix_.push_back(stack_.back());
+					safePopBack<Token>(stack_);
+				}
+			}
+
+			#ifdef DBG
+				std::cout << "to new loop" << std::endl;
+			#endif
+		}
+		#ifdef DBG
+			std::cout << "ABOUT TO FINISH " << std::endl;
+		#endif
+
+		if (SHOW_DETAILED_CALCULATION) {
+			displayCurrentState();
+		}
 	}
+	#ifdef DBG
+		std::cout << "Out of For LOOP" << std::endl;
+	#endif
 
 	while (!stack_.empty()) {
 		postfix_.push_back(stack_.back());
 		stack_.pop_back();
 	}
-	displayCurrentState();
+	if (SHOW_DETAILED_CALCULATION) {
+		displayCurrentState();
+	}
 } /* Parser::shuntingYard */

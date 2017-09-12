@@ -1,5 +1,6 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -24,6 +25,7 @@ class Parser
 		bool frontStackIsLeftBracket();
 		bool isRightBracket(const Token &tok);
 		bool isStackTokenHigherOrEqualPrecedence(const Token &tok);
+		bool isFun(const Token &tok);
 	
 		std::vector<Token> token_list_;
 		std::vector<Token> stack_;

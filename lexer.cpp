@@ -4,8 +4,6 @@
 
 #include "lexer.hpp"
 
-
-
 bool details::isWhitespace(const char c)
 {
          return (' '  == c) || ('\n' == c) ||
