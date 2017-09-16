@@ -304,7 +304,7 @@ int main(int argc, char **argv)
 	std::cout << "Tested " << PASSED_EXPRESSIONS + FAILED_EXPRESSIONS << " expressions" << std::endl;
 	std::cout << "PASSED " << PASSED_EXPRESSIONS << std::endl;
 	clock_t end = clock();
-	std::cout << double(end -begin) / CLOCKS_PER_SEC << std::endl;
+	std::cout << "Total time (sec): " << std::setprecision(2) << double(end -begin) / CLOCKS_PER_SEC << std::endl;
 
 	return 0;
 
