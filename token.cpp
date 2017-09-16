@@ -55,4 +55,53 @@ bool Token::isError() const
 	       );
 } /* Token::isError */
 
+bool Token::isLeftAssociative(const Token &tok) const
+{
+	return (tok.type == Token::E_SUB ||
+		tok.type == Token::E_ADD ||
+		tok.type == Token::E_MUL ||
+		tok.type == Token::E_DIV ||
+		tok.type == Token::E_MOD );
+} /* Token::isLeftAssociative */
+
+bool Token::isOperator(const Token &tok) const
+{
+	return (tok.type == Token::E_SUB ||
+		tok.type == Token::E_ADD ||
+		tok.type == Token::E_MUL ||
+		tok.type == Token::E_DIV ||
+		tok.type == Token::E_MOD ||
+		tok.type == Token::E_POW );
+} /* Token::isOperator */
+
+bool Token::isNumber(const Token &tok) const
+{
+	return (tok.type == Token::E_NUMBER);
+} /* Token::isNumber */
+
+bool Token::isLeftBracket(const Token &tok) const
+{
+	return (tok.type == Token::E_LBRACKET);
+} /* Token::isLeftBracket */
+
+
+bool Token::isRightBracket(const Token &tok) const
+{
+	return (tok.type == Token::E_RBRACKET);
+} /* Token::isRightBracket */
+
+
+int Token::getPrecedence(Token::token_type tt) const
+{
+	//TODO save in the Token Struct the precedence !
+	if ( tt == Token::E_ADD || tt == Token::E_SUB) {
+		return 2;
+	} else if ( tt == Token::E_MUL || tt == Token::E_DIV || tt == Token::E_MOD) {
+		return 3;
+	} else if (tt == Token::E_POW) {
+		return 4;	
+	} else {
+		return 0;
+	}
+} /* Token::getPrecedence */
 

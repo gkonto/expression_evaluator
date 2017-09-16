@@ -31,54 +31,6 @@ void Parser::displayTokenVector()
 	std::cout << std::endl;
 } /* Parser::displayTokenVector */
 
-bool Parser::isNumber(const Token &tok)
-{
-	return (tok.type == Token::E_NUMBER);
-} /* Parser::isNumber */
-
-bool Parser::isOperator(const Token &tok)
-{
-	return (tok.type == Token::E_SUB ||
-		tok.type == Token::E_ADD ||
-		tok.type == Token::E_MUL ||
-		tok.type == Token::E_DIV ||
-		tok.type == Token::E_MOD ||
-		tok.type == Token::E_POW );
-} /* Parser::isOperator */
-
-bool Parser::isLeftAssociative(const Token &tok)
-{
-	return (tok.type == Token::E_SUB ||
-		tok.type == Token::E_ADD ||
-		tok.type == Token::E_MUL ||
-		tok.type == Token::E_DIV ||
-		tok.type == Token::E_MOD );
-} /* Parser::isLeftAssociative */
-
-int Parser::getPrecedence(Token::token_type tt)
-{
-	//TODO save in the Token Struct the precedence !
-	if ( tt == Token::E_ADD || tt == Token::E_SUB) {
-		return 2;
-	} else if ( tt == Token::E_MUL || tt == Token::E_DIV || tt == Token::E_MOD) {
-		return 3;
-	} else if (tt == Token::E_POW) {
-		return 4;	
-	} else {
-		return 0;
-	}
-} /* Parser::getPrecedence */
-
-bool Parser::isLeftBracket(const Token &tok)
-{
-	return (tok.type == Token::E_LBRACKET);
-} /* Parser::isLeftBracket */
-
-bool Parser::isRightBracket(const Token &tok)
-{
-	return (tok.type == Token::E_RBRACKET);
-} /* Parser::isRightBracket */
-
 bool Parser::isFun(const Token &tok)
 {
 	//TODO to lower
@@ -95,8 +47,8 @@ bool Parser::isFun(const Token &tok)
 
 bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok)
 {
-	int token_precedence = getPrecedence(tok.type);
-	int stack_precedence = getPrecedence(stack_.back().type);
+	int token_precedence = tok.getPrecedence(tok.type);
+	int stack_precedence = tok.getPrecedence(stack_.back().type);
 
 	if (token_precedence < stack_precedence ||
 	   	token_precedence == stack_precedence) 
@@ -110,7 +62,7 @@ bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok)
 void Parser::addOperator(const Token &tok)
 {
 	while (!stack_.empty() &&
-	      	isLeftAssociative(tok) &&
+	      	tok.isLeftAssociative(tok) &&
 	       	isStackTokenHigherOrEqualPrecedence(tok))
        	{
 		postfix_.push_back(stack_.back());
@@ -123,9 +75,9 @@ bool Parser::frontStackIsLeftBracket()
 {
 	#ifdef DBG
 		std::cout << "Parser::frontStackIsLeftBracket" << std::endl;
-		std::cout << isLeftBracket(stack_.back()) << std::endl;
+		std::cout << (stack_.back()).isLeftBracket(stack_.back()) << std::endl;
 	#endif
-	return isLeftBracket(stack_.back());
+	return (stack_.back()).isLeftBracket(stack_.back());
 } /* Parser::frontStackIsLeftBracket */
 
 
@@ -161,14 +113,14 @@ void Parser::shuntingYard()
 			std::cout << "Entered loop" << std::endl;
 		#endif
 		Token tok = token_list_[i];
-		if (isNumber(tok) ) {
+		if (tok.isNumber(tok) ) {
 			postfix_.push_back(tok);
-		} else if (isOperator(tok)) {
+		} else if (tok.isOperator(tok)) {
 			addOperator(tok);
-		} else if (isLeftBracket(tok) || isFun(tok)) {
+		} else if ((stack_.back()).isLeftBracket(tok) || isFun(tok)) {
 
 			stack_.push_back(tok);
-		} else if (isRightBracket(tok)) {
+		} else if (tok.isRightBracket(tok)) {
 			#ifdef DBG
 				std::cout << "entered WHILE" << std::endl;
 			#endif

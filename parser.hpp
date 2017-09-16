@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
-#include "lexer.hpp"
+#include "token.hpp"
 
 class Parser
 {
@@ -17,13 +17,7 @@ class Parser
 		void displayCurrentState();
 		void displayTokenVector();
 		void addOperator(const Token &tok);
-		int getPrecedence(Token::token_type tt);
-		bool isLeftAssociative(const Token &tok);
-		bool isNumber(const Token &tok);
-		bool isLeftBracket(const Token &tok);
-		bool isOperator(const Token &tok);
 		bool frontStackIsLeftBracket();
-		bool isRightBracket(const Token &tok);
 		bool isStackTokenHigherOrEqualPrecedence(const Token &tok);
 		bool isFun(const Token &tok);
 	

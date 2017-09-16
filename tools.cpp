@@ -12,7 +12,6 @@ bool doubleEquals(const double a, const double  b, const double epsilon)
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
-
 bool details::isWhitespace(const char c)
 {
          return (' '  == c) || ('\n' == c) ||

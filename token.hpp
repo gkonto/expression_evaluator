@@ -39,6 +39,13 @@ struct Token
 	std::string toStr(token_type t);
 	bool isError() const;
 
+	bool isLeftAssociative(const Token &tok) const;
+       	bool isOperator(const Token &tok) const;
+	bool isNumber(const Token &tok) const;
+	bool isLeftBracket(const Token &tok) const;
+	bool isRightBracket(const Token &tok) const;
+	int  getPrecedence(token_type tt) const;
+
 	// token_type value (enum)
 	token_type type;
 	std::string value;
