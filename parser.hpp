@@ -16,9 +16,10 @@ class Parser
 	private:
 		void displayCurrentState();
 		void displayTokenVector();
-		void addOperator(const Token &tok);
+		void addOperator(Token &tok);
 		bool frontStackIsLeftBracket();
 		bool isStackTokenHigherOrEqualPrecedence(const Token &tok);
+		bool isStackEqualPrecedence(Token &tok);
 		bool isFun(const Token &tok);
 	
 		std::vector<Token> token_list_;

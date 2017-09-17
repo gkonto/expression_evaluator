@@ -25,11 +25,6 @@ std::string Token::toStr(token_type t)
 	switch (t)
 	{
 		case E_NONE        : return "NONE";
-		case E_ERROR       : return "ERROR";
-		case E_ERR_SYMBOL  : return "ERROR_SYMBOL";
-		case E_ERR_NUMBER  : return "ERROR_NUMBER";
-		case E_ERR_STRING  : return "ERROR_STRING";
-		case E_EOF         : return "EOF";
 		case E_NUMBER      : return "NUMBER";
 		case E_SYMBOL      : return "SYMBOL";
 		case E_STRING      : return "STRING";

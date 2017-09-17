@@ -59,14 +59,40 @@ bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok)
 
 } /* Parser::isStackTokenHigherOrEqualPrecedence */
 
-void Parser::addOperator(const Token &tok)
+bool Parser::isStackEqualPrecedence(Token &tok)
+{
+	int token_precedence = tok.getPrecedence(tok.type);
+	int stack_precedence = tok.getPrecedence(tok.type);
+
+	if (token_precedence == stack_precedence)
+       	{
+		return true;
+	}
+	return false;
+} /* Parser::isStackEqualPrecedence */
+
+void Parser::addOperator(Token &tok)
 {
 	while (!stack_.empty() &&
 	      	tok.isLeftAssociative(tok) &&
 	       	isStackTokenHigherOrEqualPrecedence(tok))
        	{
-		postfix_.push_back(stack_.back());
-		stack_.pop_back();
+		//case 3-+-5 etc...
+/*		if (tok.getPrecedence(tok.type) == 2 && isStackEqualPrecedence(tok)) {*/
+/*			std::cout << "MPIKEEEEEEEEEEEE" << std::endl;*/
+/*			if (tok.type != stack_.back().type) {*/
+/*				stack_.pop_back();*/
+/*				tok.type = Token::E_SUB;*/
+/*				tok.value = '-';*/
+/*			} else {*/
+/*				stack_.pop_back();*/
+/*				tok.type = Token::E_ADD;*/
+/*				tok.value = '+';*/
+/*			}*/
+/*		} else {*/
+			postfix_.push_back(stack_.back());
+			stack_.pop_back();
+/*		}*/
 	}
 	stack_.push_back(tok);
 } /* Parser::addOperator */
@@ -107,6 +133,7 @@ void Parser::shuntingYard()
 		std::cout << "PARSING phase..." << std::endl;
 		displayTokenVector();
 	}
+
 	for (std::size_t i = 0; i < token_list_.size(); i++)
 	{
 		#ifdef DBG
@@ -136,8 +163,6 @@ void Parser::shuntingYard()
 
 			}
 
-
-			
 			#ifdef DBG
 				std::cout << "ENDED while" << std::endl;
 			#endif

@@ -46,7 +46,9 @@ class Lexer
 		void scanString();
 
 		int insertTokenCore(const Token &t0, const Token &t1, Token &new_token);
+		int substituteTokensCore(const Token &t0, const Token &t1, Token &new_token);
 		int insertAdditionalTokens();
+		int substituteTokens();
 	private:
 		const char *base_itr_;
 		const char *s_itr_;

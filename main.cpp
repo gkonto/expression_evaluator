@@ -22,9 +22,10 @@ bool RUN_TEST_EXPRESSIONS ;
 int FAILED_EXPRESSIONS;
 int PASSED_EXPRESSIONS;
 
-
-static double evaluate(const std::string &expr)
+static double evaluate(const std::string &expr, int &err_code )
 {
+	double value = 0;
+
 	//lexer
 	Lexer lex;
 	lex.process(expr);
@@ -33,6 +34,12 @@ static double evaluate(const std::string &expr)
 	}
 	std::vector<Token> token_list = lex.getTokens();
 	
+	//validateExpression
+	Validator val(token_list);
+	if (!val.isValidExpr(err_code)){
+		return value;
+	}
+
 	//parse
 	Parser parse(token_list);
 	parse.shuntingYard();
@@ -41,7 +48,7 @@ static double evaluate(const std::string &expr)
 	//evaluator
 	Evaluator eval(postfix);
 	std::vector<Token> stack_ = eval.evaluate();
-	double value = 0;
+
 	if (!stack_.empty()) {
 		value = atof(stack_[0].value.c_str());
 	} else {
@@ -58,9 +65,28 @@ static double evaluate(const std::string &expr)
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
-static int isEqual(const std::string &expr, double value)
+
+void displayRelativeErrorMessage(const int err_code)
 {
-	double eval = evaluate(expr);
+	if (err_code == eNotValidExpr)
+	{
+		std::cout << "Malformed expression!" << std::endl;
+	} else if (err_code == eNoExprGiven) {
+		std::cout << "No expression given!" << std::endl;
+	} else {
+		std::cout << "Update displayRelativeErrorMessage fun!" << std::endl;
+		assert(true);
+	}
+}
+
+static int calculate(const std::string &expr, double value)
+{
+	int err_code = eOk;
+	double eval = evaluate(expr, err_code);
+
+	if (err_code != eOk) {
+		displayRelativeErrorMessage(err_code);
+	}
 
 	if (SHOW_DETAILED_CALCULATION) {
 		std::cout << std::setprecision(20) << "Comparing expr : " << eval << " with value : " << value << std::endl;
@@ -72,22 +98,27 @@ static int isEqual(const std::string &expr, double value)
 			std::cout << "Test Failed in expression: " << expr << std::endl;
 		}
 /*		assert(eval == value);*/
-		return 1;
+		return eError;
 	}
-	return 0;
-} /* isEqual */
+	return err_code;
+} /* calculate */
 
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
 static int evalExpression(const std::string &expr, double value)
 {
-	int ret = isEqual(expr, value);
+	int status = calculate(expr, value);
 	if (SHOW_DETAILED_CALCULATION) {
 		std::cout << "------------------------------" << std::endl;
 	}
-	return ret;
-} /* eval_expression */
+	if (status != eOk) {
+		FAILED_EXPRESSIONS++;
+	} else {
+		PASSED_EXPRESSIONS++;
+	}
+	return status;
+} /* evalExpression */
 
 /*----------------------------------------------*/
 
@@ -214,7 +245,6 @@ bool isParseError(int err_type)
 /*----------------------------------------------*/
 static void runDefaultTests()
 {
-	evalExpression("", 0);
 	evalExpression("+14.0", 14);
 	evalExpression("-14.0", -14);
 	evalExpression("+14", 14);
@@ -235,7 +265,11 @@ static void runDefaultTests()
 	evalExpression("2 ** (-1)", pow(2, -1));
 	evalExpression("2 ** (-0.2 + 0.2)", pow(2, -0.2+0.2));
 	evalExpression("0**2", pow(0, 2));
+	evalExpression("--5", 5 );
+	evalExpression("---5", -5 );
+	evalExpression("", 0);
 }
+
 
 /*----------------------------------------------*/
 
@@ -257,12 +291,9 @@ static void runTestsFromFile(std::ifstream &file)
 		if (!(iss>>expression>>value)) {
 			std::cout << "Invalid line found in line number: "<< FAILED_EXPRESSIONS + PASSED_EXPRESSIONS+1 << std::endl;
 		} else {
-			int ret = evalExpression(expression, value);
-			if (ret == 1) {
+			int status = evalExpression(expression, value);
+			if (status != eOk) {
 				failed << expression << "\t\t\t" << value << std::endl;
-				FAILED_EXPRESSIONS++;
-			} else {
-				PASSED_EXPRESSIONS++;
 			}
 
 		}

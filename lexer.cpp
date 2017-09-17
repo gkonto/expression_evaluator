@@ -331,33 +331,37 @@ int Lexer::insertTokenCore(const Token &t0, const Token &t1, Token &new_token)
 {
 	bool match         = false;
 
-	if      ((t0.type == Token::E_NUMBER  ) && (t1.type == Token::E_SYMBOL  )) {
-		new_token.type     = Token::E_MUL;
-		new_token.value    = "*";
-		new_token.position = t1.position;
-	      	match = true;
-	} else if ((t0.type == Token::E_NUMBER  ) && (t1.type == Token::E_LBRACKET)) {
-		new_token.type     = Token::E_MUL;
-		new_token.value    = "*";
-		new_token.position = t1.position;
-	       	match = true;
-	} else if ((t0.type == Token::E_SYMBOL  ) && (t1.type == Token::E_NUMBER  )) {
-		new_token.type     = Token::E_MUL;
-		new_token.value    = "*";
-		new_token.position = t1.position;
-		match = true;
-	} else if ((t0.type == Token::E_RBRACKET) && (t1.type == Token::E_NUMBER  )) {
-		new_token.type     = Token::E_MUL;
-		new_token.value    = "*";
-		new_token.position = t1.position;
-		match = true;
-	} else if ((t0.type == Token::E_RBRACKET) && (t1.type == Token::E_SYMBOL  )) {
-		new_token.type     = Token::E_MUL;
-		new_token.value    = "*";
-		new_token.position = t1.position;
-		match = true;
+	// 2log(2) --> 2*log(2)
+/*	if      ((t0.type == Token::E_NUMBER  ) && (t1.type == Token::E_SYMBOL  )) {*/
+/*		new_token.type     = Token::E_MUL;*/
+/*		new_token.value    = "*";*/
+/*		new_token.position = t1.position;*/
+/*	      	match = true;*/
+	// 2(2) --> 2*(2)	
+/*	} else if ((t0.type == Token::E_NUMBER  ) && (t1.type == Token::E_LBRACKET)) {*/
+/*		new_token.type     = Token::E_MUL;*/
+/*		new_token.value    = "*";*/
+/*		new_token.position = t1.position;*/
+/*	       	match = true;*/
+	// x2 --> x*2
+/*	} else if ((t0.type == Token::E_SYMBOL  ) && (t1.type == Token::E_NUMBER  )) {*/
+/*		new_token.type     = Token::E_MUL;*/
+/*		new_token.value    = "*";*/
+/*		new_token.position = t1.position;*/
+/*		match = true;*/
+/*	} else if ((t0.type == Token::E_RBRACKET) && (t1.type == Token::E_NUMBER  )) {*/
+/*		new_token.type     = Token::E_MUL;*/
+/*		new_token.value    = "*";*/
+/*		new_token.position = t1.position;*/
+/*		match = true;*/
+/*	} else if ((t0.type == Token::E_RBRACKET) && (t1.type == Token::E_SYMBOL  )) {*/
+/*		new_token.type     = Token::E_MUL;*/
+/*		new_token.value    = "*";*/
+/*		new_token.position = t1.position;*/
+/*		match = true;*/
 	// Case (-1) --> (0-1)
-	} else if ((t0.type == Token::E_LBRACKET) && (t1.type == Token::E_ADD)) {
+/*	} else if ((t0.type == Token::E_LBRACKET) && (t1.type == Token::E_ADD)) {*/
+	if ((t0.type == Token::E_LBRACKET) && (t1.type == Token::E_ADD)) {
 		new_token.type     = Token::E_NUMBER;
 		new_token.value    = "0";
 		new_token.position = t1.position;
@@ -393,6 +397,61 @@ int Lexer::insertAdditionalTokens()
 
 	return changes++;
 } /* Lexer::insertAdditionalTokens */
+
+
+int Lexer::substituteTokensCore(const Token &t0, const Token &t1, Token &new_token)
+{
+	bool match = false;
+
+	if ((t0.type == Token::E_ADD && t1.type == Token::E_SUB) ||
+	    (t0.type == Token::E_SUB && t1.type == Token::E_ADD)) {
+		new_token.type     = Token::E_SUB;
+		new_token.value    = "-";
+		new_token.position = t0.position;
+		match = true;
+	} else if ((t0.type == Token::E_ADD && t1.type == Token::E_ADD) ||
+		   (t0.type == Token::E_SUB && t1.type == Token::E_SUB)) {
+		new_token.type     = Token::E_ADD;
+		new_token.value    = "+";
+		new_token.position = t0.position;
+		match = true;
+	}
+
+	return (match) ? 1 : -1;
+} /* Lexer::substituteTokensCore */
+
+
+int Lexer::substituteTokens()
+{
+	if (token_list_.empty()) {
+		return 0;
+	}
+	std::size_t changes = 0;
+
+	std::size_t i = 0;
+
+	while ( i < (token_list_.size() - 1))
+       	{
+		Token t;
+		
+		int substitute_index = -1;
+		substitute_index = substituteTokensCore(token_list_[i], token_list_[i+1], t);
+		if (substitute_index > 0) {
+			std::vector<Token>::iterator it;
+
+			token_list_.erase(token_list_.begin() + i, token_list_.begin() + i + 2);	
+			it = token_list_.begin() + i;
+			token_list_.insert(token_list_.begin() + i, static_cast<const Token &>(t));
+			changes++;
+
+		}
+		if (substitute_index == -1) {
+			i++;
+		}
+	}	
+	return changes;
+}
+
 
 bool Lexer::process(const std::string &str)
 /* Beginning of everything.
@@ -435,6 +494,10 @@ bool Lexer::process(const std::string &str)
 			return false;
 		}
 	}
+
+	//substitute
+	substituteTokens();	
+
 	//insert needed tokens
 	insertAdditionalTokens();
 
