@@ -138,6 +138,14 @@ static int getFileWithRandomExpression(const char *argv, std::ifstream &file )
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
+static std::string getGivenExpression(const char *argv)
+{
+	std::string expr(argv);
+	return expr;
+}
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
 static int configureDetailedInfo(const char *argv)
 {
 	if (!strcmp(argv, "no")) {
@@ -182,7 +190,7 @@ static void showHelpSummary() {
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
-static int parseArgs(const int argc, char **argv, std::ifstream &file)
+static int parseArgs(const int argc, char **argv, std::ifstream &file, std::string &given_expr)
 {
 	int err_type = E_NONE;
 	for (int i = 0; i < argc; i++) {
@@ -210,6 +218,12 @@ static int parseArgs(const int argc, char **argv, std::ifstream &file)
 		} else if (!strcmp(argv[i], "-t")) {
 			if (argv[i+1]) {
 				err_type = configureRunTestExpressions(argv[i+1]);
+			} else {
+				err_type = E_INVALID_ARG;
+			}
+		} else if (!strcmp(argv[i], "-e")) {
+			if (argv[i+1]) {
+				given_expr = getGivenExpression(argv[i+1]);
 			} else {
 				err_type = E_INVALID_ARG;
 			}
@@ -304,10 +318,25 @@ static void runTestsFromFile(std::ifstream &file)
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
+static void calculateGivenExpression(const std::string &expr)
+{
+	int err_code = eOk;
+	double eval = evaluate(expr, err_code);
+	if (err_code != eOk) {
+		displayRelativeErrorMessage(err_code);
+	} else {
+		std::cout << "Result: " << eval << std::endl;
+	}
+}
+
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
 int main(int argc, char **argv)
 {
 
 	std::ifstream file;
+	std::string givenExpression;
 	int err_type = E_NONE;
 	SHOW_DETAILED_CALCULATION = true;
 	RUN_TEST_EXPRESSIONS = false;
@@ -315,7 +344,7 @@ int main(int argc, char **argv)
 	PASSED_EXPRESSIONS = 0;
 	clock_t begin = clock();
 
-	err_type = parseArgs(argc, argv, file);
+	err_type = parseArgs(argc, argv, file, givenExpression);
 
 	if (isParseError(err_type))
        	{
@@ -330,6 +359,11 @@ int main(int argc, char **argv)
 	if (file.is_open())
 	{
 		runTestsFromFile(file);
+	}
+
+	if (!givenExpression.empty()) {
+		std::cout << "MPIKE" << std::endl;
+		calculateGivenExpression(givenExpression);
 	}
 
 	std::cout << "Tested " << PASSED_EXPRESSIONS + FAILED_EXPRESSIONS << " expressions" << std::endl;
