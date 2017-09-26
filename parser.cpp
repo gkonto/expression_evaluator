@@ -1,5 +1,6 @@
 #include "parser.hpp"
 #include "tools.hpp"
+#include <algorithm>
 
 void Parser::displayCurrentState()
 {
@@ -30,20 +31,6 @@ void Parser::displayTokenVector()
 
 	std::cout << std::endl;
 } /* Parser::displayTokenVector */
-
-bool Parser::isFun(const Token &tok)
-{
-	//TODO to lower
-	//strcmp??
-	if (tok.type == Token::E_SYMBOL) {
-		return (tok.value == "cos" ||
-			tok.value == "sin" ||
-			tok.value == "log");
-	} else {
-		return false;
-	}
-}
-
 
 bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok)
 {
@@ -144,7 +131,7 @@ void Parser::shuntingYard()
 			postfix_.push_back(tok);
 		} else if (tok.isOperator(tok)) {
 			addOperator(tok);
-		} else if ((stack_.back()).isLeftBracket(tok) || isFun(tok)) {
+		} else if ((stack_.back()).isLeftBracket(tok) || tok.isFun(tok)) {
 
 			stack_.push_back(tok);
 		} else if (tok.isRightBracket(tok)) {
@@ -173,7 +160,7 @@ void Parser::shuntingYard()
 					std::cout << "JUST AFTER while" << std::endl;
 				#endif
 
-				if (!stack_.empty() && isFun(stack_.back())) {
+				if (!stack_.empty() && tok.isFun(stack_.back())) {
 
 					#ifdef DBG
 						std::cout << "isfun" << std::endl;

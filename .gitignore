@@ -6,3 +6,6 @@ a.out
 AUTOPROSEXE.cpp
 random_expressions.txt
 
+parser.cpp.swp
+tools.cpp.swp
+lexer.cpp.swp

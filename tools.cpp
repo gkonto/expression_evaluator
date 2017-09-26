@@ -3,10 +3,34 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
+#include <stdio.h>
+#include <ctype.h>
 
 #include "tools.hpp"
 #include "token.hpp"
 
+std::vector<std::string> builtinFuns;
+
+static void addFunToGlobal(std::string fun)
+{
+	int i = 0;
+	char c;
+	while(fun[i])
+	{
+		c = fun[i];
+		putchar(tolower(c));
+		i++;
+	}
+
+	builtinFuns.push_back(fun);
+}
+
+void initializeFuns()
+{
+	addFunToGlobal("log");	
+	addFunToGlobal("sin");	
+	addFunToGlobal("cos");	
+}
 
 bool doubleEquals(const double a, const double  b, const double epsilon)
 {

@@ -43,6 +43,7 @@ struct Token
        	bool isOperator(const Token &tok) const;
 	bool isNumber(const Token &tok) const;
 	bool isLeftBracket(const Token &tok) const;
+	bool isFun(const Token &tok);
 	bool isRightBracket(const Token &tok) const;
 	int  getPrecedence(token_type tt) const;
 

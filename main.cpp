@@ -321,11 +321,12 @@ static void runTestsFromFile(std::ifstream &file)
 static void calculateGivenExpression(const std::string &expr)
 {
 	int err_code = eOk;
-	double eval = evaluate(expr, err_code);
+	evaluate(expr, err_code);
 	if (err_code != eOk) {
 		displayRelativeErrorMessage(err_code);
+		FAILED_EXPRESSIONS++;
 	} else {
-		std::cout << "Result: " << eval << std::endl;
+		PASSED_EXPRESSIONS++;
 	}
 }
 
@@ -345,6 +346,7 @@ int main(int argc, char **argv)
 	clock_t begin = clock();
 
 	err_type = parseArgs(argc, argv, file, givenExpression);
+	initializeFuns();
 
 	if (isParseError(err_type))
        	{
@@ -362,7 +364,6 @@ int main(int argc, char **argv)
 	}
 
 	if (!givenExpression.empty()) {
-		std::cout << "MPIKE" << std::endl;
 		calculateGivenExpression(givenExpression);
 	}
 

@@ -13,6 +13,8 @@ enum exprStatus
 	eNoExprGiven
 };
 
+extern std::vector<std::string> builtinFuns;
+
 typedef enum parseErrorTypes {
 	E_NONE = 0,
 	E_INVALID_ARG,
@@ -42,6 +44,7 @@ namespace details
 }
 
 bool doubleEquals(const double a, const double  b, const double epsilon = 0.001);
+void initializeFuns();
 
 template<typename T>
 extern void safePopBack(std::vector<T> &vec)

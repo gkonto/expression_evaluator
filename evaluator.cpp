@@ -185,8 +185,7 @@ std::vector<Token> Evaluator::evaluate()
 			}
 			Token new_val = calcBinaryExpr(left, right, tmp);
 			stack_.push_back(new_val);
-		} else if (tmp.type == Token::E_SYMBOL && (tmp.value == "cos" || tmp.value == "sin" || tmp.value == "log")) {
-			//TODO de maresei edo. ti tha ginei an pairnei perissotera tokens apo ena ?
+		} else if (tmp.isFun(tmp)) {
 			//TODO pos tha ginei na diorthoso ena terastio loop
 			Token next_tok = stack_.back();
 			stack_.pop_back();

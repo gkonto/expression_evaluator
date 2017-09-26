@@ -1,4 +1,6 @@
+#include <algorithm>
 #include "token.hpp"
+#include "tools.hpp"
 /*********************************************************************/
 /*		STRUCT TOKEN START				     */
 /*********************************************************************/
@@ -40,6 +42,18 @@ std::string Token::toStr(token_type t)
 
 	}
 } /* Token::toStr */
+
+bool Token::isFun(const Token &tok)
+{
+	std::vector<std::string>::iterator it;
+	it = find(builtinFuns.begin(), builtinFuns.end(), tok.value);
+
+	if (tok.type == Token::E_SYMBOL && it != builtinFuns.end()) {
+		return true;
+	} else {
+		return false;
+	}
+}
 
 bool Token::isError() const
 {

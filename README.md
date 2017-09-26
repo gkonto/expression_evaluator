@@ -10,6 +10,7 @@ The current version is still under testing, development and bug fixing.
 
 
 How to build the evaluator:
+
 	1) Copy the files in a directory.
 	2) Create a build/ folder in this directory
 	3) cd build/
@@ -17,10 +18,12 @@ How to build the evaluator:
 	5) make (while in build/)
 
 How to run the evaluator:
+
 	1) After build expression_evaluator is created
 	2) just type ./expression_evaluator
 
 The evaluator can take 3 arguments:
+
 	--help                 :shows the available arguments with description
 
 	-f [filename]          : This argument followed by a file(full files path) 
@@ -31,6 +34,7 @@ The evaluator can take 3 arguments:
 
 	-d [no, yes]           : Shows the detailed calculation from the beginning to the end. (default : yes)
 	-t [run, do_not_run]   : Runs the built in expressions (just for testing). (default : do_not_run)
+	-e [expression]        : Calculates the given expression instantly without comparison.
 
 
 IMPORTANT NOTE: The evaluator is still under testing.

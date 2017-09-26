@@ -181,6 +181,7 @@ void Lexer::scanSymbol()
 		++s_itr_;
 	}
 	Token t;
+	std::string tmp_str(begin, s_itr_);
 	t.setToken(Token::E_SYMBOL, begin, s_itr_, base_itr_);
 	token_list_.push_back(t);
 } /* Lexer::scanSymbol */
