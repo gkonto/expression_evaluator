@@ -32,12 +32,15 @@ std::string Token::toStr(token_type t)
 		case E_STRING      : return "STRING";
 		case E_RBRACKET    : return ")";
 		case E_LBRACKET    : return "(";
+		case E_LCRLBRACKET : return "{";
+		case E_LSQRBRACKET : return "[";
 		case E_ADD         : return "+";
 		case E_SUB         : return "-";
 		case E_DIV         : return "/";
 		case E_MUL         : return "*";
 		case E_MOD         : return "%";
 		case E_POW         : return "**";
+		case E_EQ          : return "=";
 		default            : return "UNKNOWN";
 
 	}
@@ -64,7 +67,7 @@ bool Token::isError() const
 	       );
 } /* Token::isError */
 
-bool Token::isLeftAssociative(const Token &tok) const
+bool Token::isLeftAssociative(const Token &tok) 
 {
 	return (tok.type == Token::E_SUB ||
 		tok.type == Token::E_ADD ||
@@ -73,7 +76,7 @@ bool Token::isLeftAssociative(const Token &tok) const
 		tok.type == Token::E_MOD );
 } /* Token::isLeftAssociative */
 
-bool Token::isOperator(const Token &tok) const
+bool Token::isOperator(const Token &tok)
 {
 	return (tok.type == Token::E_SUB ||
 		tok.type == Token::E_ADD ||
@@ -83,24 +86,66 @@ bool Token::isOperator(const Token &tok) const
 		tok.type == Token::E_POW );
 } /* Token::isOperator */
 
-bool Token::isNumber(const Token &tok) const
+bool Token::isNumber(const Token &tok)
 {
 	return (tok.type == Token::E_NUMBER);
 } /* Token::isNumber */
 
-bool Token::isLeftBracket(const Token &tok) const
+void Token::clear()
+{
+	type     = E_NONE;
+	value    = "";
+	position = std::numeric_limits<std::size_t>::max();
+}
+
+bool Token::isSub(const Token &tok)
+{
+	return (tok.type == Token::E_SUB);
+} /* Token::isNodeSub */
+
+bool Token::isAdd(const Token &tok)
+{
+	return (tok.type == Token::E_ADD);
+} /* Token::isNodeAdd */
+
+bool Token::isMul(const Token &tok)
+{
+	return (tok.type == Token::E_MUL);
+} /* Token::isNodeMul */
+
+bool Token::isDiv(const Token &tok)
+{
+	return (tok.type == Token::E_DIV);
+} /* Token::isNodeDiv */
+
+bool Token::isMod(const Token &tok)
+{
+	return (tok.type == Token::E_MOD);
+} /* Token::isNodeMod */
+
+bool Token::isPow(const Token &tok)
+{
+	return (tok.type == Token::E_POW);
+} /* Token::isNodePow */
+
+bool Token::isAssign(const Token &tok) 
+{
+	return (tok.type == Token::E_EQ);
+} /* Token::isAssign */
+
+bool Token::isLeftBracket(const Token &tok)
 {
 	return (tok.type == Token::E_LBRACKET);
 } /* Token::isLeftBracket */
 
 
-bool Token::isRightBracket(const Token &tok) const
+bool Token::isRightBracket(const Token &tok)
 {
 	return (tok.type == Token::E_RBRACKET);
 } /* Token::isRightBracket */
 
 
-int Token::getPrecedence(Token::token_type tt) const
+int Token::getPrecedence(Token::token_type tt)
 {
 	//TODO save in the Token Struct the precedence !
 	if ( tt == Token::E_ADD || tt == Token::E_SUB) {

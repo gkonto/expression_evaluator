@@ -14,11 +14,11 @@ std::vector<std::string> builtinFuns;
 static void addFunToGlobal(std::string fun)
 {
 	int i = 0;
-	char c;
+/*	char c;*/
 	while(fun[i])
 	{
-		c = fun[i];
-		putchar(tolower(c));
+/*		c = fun[i];*/
+		fun[i] = tolower(fun[i]);
 		i++;
 	}
 
@@ -78,13 +78,13 @@ bool details::isLetterOrDigit(const char c)
 /*----------------------------------------------*/
 bool details::isLeftBracket(const char c)
 {
-	return ('(' == c);
+	return ('(' == c) || ('[' == c) || ('{' == c);
 } /* details::isLeftBracket */
 
 /*----------------------------------------------*/
 bool details::isRightBracket(const char c)
 {
-	return (')' == c);
+	return (')' == c) || ( ']' == c) || ('}' == c);
 } /* details::isRightBracket */
 
 /*----------------------------------------------*/

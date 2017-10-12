@@ -19,12 +19,15 @@ struct Token
 		E_STRING = 9,
 		E_RBRACKET = ')',
 		E_LBRACKET = '(',
+		E_LCRLBRACKET = '{',
+		E_LSQRBRACKET = '[',
 		E_ADD = '+',
 		E_SUB = '-',
 		E_DIV = '/',
 		E_MUL = '*',
 		E_MOD = '%',
 		E_POW = '^',
+		E_EQ  = '=',
 	};
 
 	Token()
@@ -38,14 +41,22 @@ struct Token
 	Token& setToken(const token_type tt, const std::string &s, const std::size_t p);
 	std::string toStr(token_type t);
 	bool isError() const;
+	void clear();
 
-	bool isLeftAssociative(const Token &tok) const;
-       	bool isOperator(const Token &tok) const;
-	bool isNumber(const Token &tok) const;
-	bool isLeftBracket(const Token &tok) const;
-	bool isFun(const Token &tok);
-	bool isRightBracket(const Token &tok) const;
-	int  getPrecedence(token_type tt) const;
+	bool isLeftAssociative(const Token &tok);
+       	static bool isOperator(const Token &tok);
+	static bool isNumber(const Token &tok);
+	static bool isLeftBracket(const Token &tok);
+	static bool isFun(const Token &tok);
+	static bool isRightBracket(const Token &tok);
+	static bool isSub(const Token &tok);
+	static bool isAdd(const Token &tok);
+	static bool isMul(const Token &tok);
+	static bool isDiv(const Token &tok);
+	static bool isMod(const Token &tok);
+	static bool isPow(const Token &tok);
+	static bool isAssign(const Token &tok);
+	static int  getPrecedence(token_type tt);
 
 	// token_type value (enum)
 	token_type type;

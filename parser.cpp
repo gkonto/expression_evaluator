@@ -1,41 +1,314 @@
 #include "parser.hpp"
 #include "tools.hpp"
 #include <algorithm>
+#include <math.h>
+#include <assert.h>
+#include <stack>
 
-void Parser::displayCurrentState()
+void buildOpCore(Node *binary, std::vector<Node *>&nodes)
+{
+	if (!nodes.empty()) {
+		binary->setRhs(nodes.back());
+		nodes.pop_back();
+	}
+	if (!nodes.empty()) {
+		binary->setLhs(nodes.back());
+		nodes.pop_back();
+	}
+	nodes.push_back(binary);
+}
+
+void SubOp::build(std::vector<Node *> &nodes)
+{
+	buildOpCore(this, nodes);
+} /* SubOp::build */
+
+void AddOp::build(std::vector<Node *> &nodes)
+{
+	buildOpCore(this, nodes);
+} /* AddOp::build */
+
+void MulOp::build(std::vector<Node *> &nodes)
+{
+	buildOpCore(this, nodes);
+} /* MulOp::build */
+
+void DivOp::build(std::vector<Node *> &nodes)
+{
+	buildOpCore(this, nodes);
+} /* DivOp::build */
+
+void ModOp::build(std::vector<Node *> &nodes)
+{
+	buildOpCore(this, nodes);
+} /* ModOp::build */
+
+void PowOp::build(std::vector<Node *> &nodes)
+{
+	buildOpCore(this, nodes);
+} /* PowOp::build */
+
+Token Node::getToken()
+{
+	Token tok;
+	return tok;
+}
+
+void ExpressionNode::build(std::vector<Token> &tokens)
+{
+	std::list<Token> postfix = Parser::shuntingYard(tokens);
+	std::cout << "Finished ShuntingYard" << std::endl;
+	
+	std::vector<Node *> stack;
+	std::list<Token>::const_iterator it;
+	for (it = postfix.begin(); it != postfix.end(); it++)
+	{
+		Node *node = Parser::createNode(*it);
+		if (Token::isNumber(*it))
+	       	{
+			stack.push_back(node);
+		}
+		node->setToken(*it);
+		node->build(stack);
+	}	
+	//Prepei to stack edo na einai panta size() = 1 !
+	//an den einai na bgalo assert! kai na elegxo se poies
+	//periptoseis to stack mporei na einai > 1.
+	if (stack.size() != 1) {
+		std::cout << "Parser.cpp: ExpressionNode::build" << std::endl;
+		std::cout << "TO STACK THeORITIKA PREPEI NA EINAI 1 edo !" << std::endl;
+	} else {
+		this->e_node = stack[0];
+	}
+}
+
+double ExpressionNode::eval()
+{
+	if (this->e_node) {
+		return (this->e_node->eval());
+	}
+	return 0;
+}
+
+double SubOp::eval()
+{
+	double left = 0;
+	if (this->lhs_) {
+		left =  (lhs_->eval());
+	}
+	double right = 0;
+	if (this->rhs_) {
+		right = (rhs_->eval());
+	}
+	return (left-right);
+}
+
+double AddOp::eval()
+{
+	double left = 0;
+	if (this->lhs_) {
+		left = (lhs_->eval());
+	}
+	double right = 0;
+	if (this->rhs_) {
+		right = (rhs_->eval());
+	}
+	return (left+right);
+}
+
+double MulOp::eval()
+{
+	double left = 0;
+	if (this->lhs_) {
+		left = (lhs_->eval());
+	}
+	double right = 0;
+	if (this->rhs_) {
+		right = (rhs_->eval());
+	}
+	return (left*right);
+}
+
+double DivOp::eval()
+{
+	double left = 0;
+	if (this->lhs_) {
+		left = (lhs_->eval());
+	}
+	double right = 0;
+	if (this->rhs_) {
+		right = (rhs_->eval());
+	}
+	return (left/right);
+}
+
+/*double ModOp::eval()*/
+/*{*/
+/*	double left = 0;*/
+/*	if (this->lhs_) {*/
+/*		left = (lhs_->eval());*/
+/*	}*/
+/*	double right = 0;*/
+/*	if (this->rhs_) {*/
+/*		right = (rhs_->eval());*/
+/*	}*/
+/*	return (left % right);*/
+/*}*/
+
+double PowOp::eval()
+{
+	double left = 0;
+	if (this->lhs_) {
+		left = (lhs_->eval());
+	}
+	double right = 0;
+	if (this->rhs_) {
+		right = (rhs_->eval());
+	}
+	return pow(left,right);
+}
+
+double Number::eval()
+{
+	return atof(this->getToken().value.c_str());
+}
+
+void BracketChecker::reset()
+{
+	stack_ = std::stack<char>();
+	state_ = true;
+	errorToken_.clear();
+}
+
+std::size_t BracketChecker::checkBracketValidity(std::vector<Token> &tokens)
+{
+	if (!tokens.empty()) {
+		for (std::size_t i = 0; i < (tokens.size()); ++i) {
+			const Token &t0 = tokens[i];
+			std::cout << tokens[i].value << std::endl;
+			if (!operator()(t0)) {
+				return i;
+			}
+		}
+	}
+	return tokens.size();
+}
+
+bool BracketChecker::operator()(const Token &t)
+{
+	if (!t.value.empty() && (Token::E_STRING != t.type)
+		&& (Token::E_SYMBOL != t.type) && (details::isBracket(t.value[0]))) {
+		char c = t.value[0];
+
+		if (t.type == Token::E_LBRACKET) {
+			stack_.push(')');
+		} else if (t.type == Token::E_LCRLBRACKET) {
+			stack_.push('}');
+		} else if (t.type == Token::E_LSQRBRACKET) {
+			stack_.push(']');
+		} else if (details::isRightBracket(c)) {
+			if (stack_.empty()) {
+				state_ = false;
+				errorToken_ = t;
+				return false;
+			} else if (c != stack_.top()) {
+				state_ = false;
+				errorToken_ = t;
+				return false;
+			} else {
+				stack_.pop();
+			}
+		}
+	}
+	return true;
+}
+
+Node *Parser::createNode(const Token &tok)
+{
+	if (Token::isNumber(tok)) {
+		Number *node = new Number;
+		return node;
+	} else if (Token::isOperator(tok)) {
+		if (Token::isSub(tok)) {
+			SubOp *node = new SubOp;
+			return node;
+		} else if (Token::isAdd(tok)) {
+			AddOp *node = new AddOp;
+			return node;
+		} else if (Token::isMul(tok)) {
+			MulOp *node = new MulOp;
+			return node;
+		} else if (Token::isDiv(tok)) {
+			DivOp *node = new DivOp;
+			return node;
+		} else if (Token::isMod(tok)) {
+			ModOp *node = new ModOp;
+			return node;
+		} else if (Token::isPow(tok)) {
+			PowOp *node = new PowOp;
+			return node;
+		} else {
+			return NULL;
+		}
+	} 
+	return NULL;
+}
+
+Node *Parser::createNode(std::vector<Token> &tokens)
+{
+	std::vector<Token>::iterator it;
+
+	// else it is expression, assignment etc.
+	if (Token::isAssign(tokens[1])) { //maybe its an assignment
+
+	} else {
+		ExpressionNode *node = new ExpressionNode;
+		return node;
+	}
+
+	//Should not reach this place!
+	assert(false);
+	return NULL;
+}
+
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
+
+void Parser::displayCurrentState(std::vector<Token> stack, std::list<Token> postfix)
 {
 	std::size_t i = 0;
 
 	std::cout << "Stack   | "; 
-	for (i = 0; i < stack_.size(); i++) {
-		std::cout << stack_[i].value;
+	for (i = 0; i < stack.size(); i++) {
+		std::cout << stack[i].value;
 		std::cout << " ";
 	}
 	std::cout << std::endl;
 	std::cout << "PostFix | ";
 	std::list<Token>::iterator iter;
-	for ( iter = postfix_.begin(); iter != postfix_.end(); iter++) {
+	for ( iter = postfix.begin(); iter != postfix.end(); iter++) {
 		std::cout << iter->value ;
 		std::cout << " " ;
 	}
 	std::cout << std::endl << std::endl;;
 } /* Parser::displayCurrentState */
 
-void Parser::displayTokenVector()
+void Parser::displayTokenVector(std::vector<Token> tokens)
 {
 	std::size_t i = 0;
-	for (i = 0; i < token_list_.size(); i++) 
+	for (i = 0; i < tokens.size(); i++) 
 	{
-		std::cout << token_list_[i].value << " ";
+		std::cout << tokens[i].value << " ";
 	}
 
 	std::cout << std::endl;
 } /* Parser::displayTokenVector */
 
-bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok)
+bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok, std::vector<Token> stack)
 {
-	int token_precedence = tok.getPrecedence(tok.type);
-	int stack_precedence = tok.getPrecedence(stack_.back().type);
+	int token_precedence = Token::getPrecedence(tok.type);
+	int stack_precedence = Token::getPrecedence(stack.back().type);
 
 	if (token_precedence < stack_precedence ||
 	   	token_precedence == stack_precedence) 
@@ -46,10 +319,10 @@ bool Parser::isStackTokenHigherOrEqualPrecedence(const Token &tok)
 
 } /* Parser::isStackTokenHigherOrEqualPrecedence */
 
-bool Parser::isStackEqualPrecedence(Token &tok)
+bool Parser::isStackEqualPrecedence(Token &tok, std::vector<Token> stack)
 {
-	int token_precedence = tok.getPrecedence(tok.type);
-	int stack_precedence = tok.getPrecedence(tok.type);
+	int token_precedence = Token::getPrecedence(tok.type);
+	int stack_precedence = Token::getPrecedence(stack.back().type);
 
 	if (token_precedence == stack_precedence)
        	{
@@ -58,11 +331,11 @@ bool Parser::isStackEqualPrecedence(Token &tok)
 	return false;
 } /* Parser::isStackEqualPrecedence */
 
-void Parser::addOperator(Token &tok)
+void Parser::addOperator(Token &tok, std::vector<Token> &stack, std::list<Token> &postfix)
 {
-	while (!stack_.empty() &&
+	while (!stack.empty() &&
 	      	tok.isLeftAssociative(tok) &&
-	       	isStackTokenHigherOrEqualPrecedence(tok))
+	       	isStackTokenHigherOrEqualPrecedence(tok, stack))
        	{
 		//case 3-+-5 etc...
 /*		if (tok.getPrecedence(tok.type) == 2 && isStackEqualPrecedence(tok)) {*/
@@ -77,24 +350,20 @@ void Parser::addOperator(Token &tok)
 /*				tok.value = '+';*/
 /*			}*/
 /*		} else {*/
-			postfix_.push_back(stack_.back());
-			stack_.pop_back();
+			postfix.push_back(stack.back());
+			stack.pop_back();
 /*		}*/
 	}
-	stack_.push_back(tok);
+	stack.push_back(tok);
 } /* Parser::addOperator */
 
-bool Parser::frontStackIsLeftBracket()
+bool Parser::frontStackIsLeftBracket(std::vector<Token> stack)
 {
-	#ifdef DBG
-		std::cout << "Parser::frontStackIsLeftBracket" << std::endl;
-		std::cout << (stack_.back()).isLeftBracket(stack_.back()) << std::endl;
-	#endif
-	return (stack_.back()).isLeftBracket(stack_.back());
+	return (stack.back()).isLeftBracket(stack.back());
 } /* Parser::frontStackIsLeftBracket */
 
 
-void Parser::shuntingYard()
+std::list<Token> Parser::shuntingYard(std::vector<Token> tokens)
 {
 /*
  * Implementation Details:
@@ -116,81 +385,52 @@ void Parser::shuntingYard()
  * 	while there are still operator tokens on the stack:
  * 		pop the operator onto the output queue.
  */
+	std::vector<Token> stack;
+	std::list<Token>   postfix;
+
 	if (SHOW_DETAILED_CALCULATION) {
 		std::cout << "PARSING phase..." << std::endl;
-		displayTokenVector();
+		displayTokenVector(tokens);
 	}
 
-	for (std::size_t i = 0; i < token_list_.size(); i++)
+	for (std::size_t i = 0; i < tokens.size(); i++)
 	{
-		#ifdef DBG
-			std::cout << "Entered loop" << std::endl;
-		#endif
-		Token tok = token_list_[i];
+		Token tok = tokens[i];
 		if (tok.isNumber(tok) ) {
-			postfix_.push_back(tok);
+			postfix.push_back(tok);
 		} else if (tok.isOperator(tok)) {
-			addOperator(tok);
-		} else if ((stack_.back()).isLeftBracket(tok) || tok.isFun(tok)) {
+			addOperator(tok, stack, postfix);
+		} else if ((stack.back()).isLeftBracket(tok) || tok.isFun(tok)) {
 
-			stack_.push_back(tok);
+			stack.push_back(tok);
 		} else if (tok.isRightBracket(tok)) {
-			#ifdef DBG
-				std::cout << "entered WHILE" << std::endl;
-			#endif
-			while (!stack_.empty() &&
-				!frontStackIsLeftBracket())
+			while (!stack.empty() &&
+				!frontStackIsLeftBracket(stack))
 			{
-				postfix_.push_back(stack_.back());
-				safePopBack<Token>(stack_);
-
-				#ifdef DBG
-					std::cout << "JUST OUT OF STACK" << std::endl;
-				#endif
-
+				postfix.push_back(stack.back());
+				safePopBack<Token>(stack);
 			}
 
-			#ifdef DBG
-				std::cout << "ENDED while" << std::endl;
-			#endif
+			if (frontStackIsLeftBracket(stack)) {
+				safePopBack<Token>(stack);
 
-			if (frontStackIsLeftBracket()) {
-				safePopBack<Token>(stack_);
-				#ifdef DBG
-					std::cout << "JUST AFTER while" << std::endl;
-				#endif
+				if (!stack.empty() && tok.isFun(stack.back())) {
 
-				if (!stack_.empty() && tok.isFun(stack_.back())) {
-
-					#ifdef DBG
-						std::cout << "isfun" << std::endl;
-					#endif
-					postfix_.push_back(stack_.back());
-					safePopBack<Token>(stack_);
+					postfix.push_back(stack.back());
+					safePopBack<Token>(stack);
 				}
 			}
-
-			#ifdef DBG
-				std::cout << "to new loop" << std::endl;
-			#endif
 		}
-		#ifdef DBG
-			std::cout << "ABOUT TO FINISH " << std::endl;
-		#endif
-
 		if (SHOW_DETAILED_CALCULATION) {
-			displayCurrentState();
+			displayCurrentState(stack, postfix);
 		}
 	}
-	#ifdef DBG
-		std::cout << "Out of For LOOP" << std::endl;
-	#endif
-
-	while (!stack_.empty()) {
-		postfix_.push_back(stack_.back());
-		stack_.pop_back();
+	while (!stack.empty()) {
+		postfix.push_back(stack.back());
+		stack.pop_back();
 	}
 	if (SHOW_DETAILED_CALCULATION) {
-		displayCurrentState();
+		displayCurrentState(stack, postfix);
 	}
+	return postfix;
 } /* Parser::shuntingYard */

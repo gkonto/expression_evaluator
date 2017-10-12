@@ -19,6 +19,7 @@
 
 bool SHOW_DETAILED_CALCULATION;
 bool RUN_TEST_EXPRESSIONS ;
+bool RUN_PARSE_TREE;
 int FAILED_EXPRESSIONS;
 int PASSED_EXPRESSIONS;
 
@@ -41,9 +42,8 @@ static double evaluate(const std::string &expr, int &err_code )
 	}
 
 	//parse
-	Parser parse(token_list);
-	parse.shuntingYard();
-	std::list<Token> postfix = parse.getPostFix();
+	Parser parse;
+	std::list<Token> postfix = parse.shuntingYard(token_list);
 	
 	//evaluator
 	Evaluator eval(postfix);
@@ -126,6 +126,23 @@ static int evalExpression(const std::string &expr, double value)
 static int getFileWithRandomExpression(const char *argv, std::ifstream &file )
 {
 	file.open(argv, std::ifstream::in);
+
+	if (file.is_open()) {
+		return E_NONE;
+	} else {
+		return E_INVALID_ARG;
+	}
+	return E_NONE;
+}
+
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
+static int getFileForAST(const char *argv, std::ifstream &file)
+{
+	file.open(argv, std::ifstream::in);
+
+	RUN_PARSE_TREE = true;
 
 	if (file.is_open()) {
 		return E_NONE;
@@ -227,7 +244,16 @@ static int parseArgs(const int argc, char **argv, std::ifstream &file, std::stri
 			} else {
 				err_type = E_INVALID_ARG;
 			}
+		} else if (!strcmp(argv[i], "-o")) {
+			if (argv[i+1]) {
+				err_type = getFileForAST(argv[i+1], file);
+				RUN_PARSE_TREE = true;
+			} else {
+				err_type = E_INVALID_ARG;
+			}
+
 		}
+				
 		if (err_type != E_NONE) {
 			return err_type;
 		}
@@ -333,10 +359,42 @@ static void calculateGivenExpression(const std::string &expr)
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
+static void startReadingFile(std::ifstream &file)
+{
+	Parser parser;
+	std::string line;
+
+	while (std::getline(file, line))
+	{
+		Lexer lex;
+		lex.process(line);
+		std::vector<Token> tokens = lex.getTokens();
+		std::cout << line << std::endl;
+
+		BracketChecker bc = parser.getBracketChecker();
+		if (bc.checkBracketValidity(tokens) != tokens.size()) {
+			std::cout << "Check the brackets!" << std::endl;
+			std::cout << "NOT VALID BRACKETS" << std::endl;
+			continue;
+		}
+		Node *node = parser.createNode(tokens);
+		if (node) {
+			node->build(tokens);
+		}
+		//TODO svisto: apla kano eval na do an doyleuei.
+		std::cout << "Evaluate Phase" << std::endl;
+		std::cout << "Eval " << node->eval() << std::endl;
+		std::cout << "END OF EXPRESSION" << std::endl << std::endl;
+	}
+}
+
+/*----------------------------------------------*/
+
+/*----------------------------------------------*/
 int main(int argc, char **argv)
 {
 
-	std::ifstream file;
+	std::ifstream fileExpression;
 	std::string givenExpression;
 	int err_type = E_NONE;
 	SHOW_DETAILED_CALCULATION = true;
@@ -345,7 +403,7 @@ int main(int argc, char **argv)
 	PASSED_EXPRESSIONS = 0;
 	clock_t begin = clock();
 
-	err_type = parseArgs(argc, argv, file, givenExpression);
+	err_type = parseArgs(argc, argv, fileExpression, givenExpression);
 	initializeFuns();
 
 	if (isParseError(err_type))
@@ -353,19 +411,26 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	if (RUN_PARSE_TREE)
+       	{
+		startReadingFile(fileExpression);
+		return 0;
+	}
+
 	if (RUN_TEST_EXPRESSIONS)
        	{
 		runDefaultTests();
 	}
 
-	if (file.is_open())
+	if (fileExpression.is_open())
 	{
-		runTestsFromFile(file);
+		runTestsFromFile(fileExpression);
 	}
 
 	if (!givenExpression.empty()) {
 		calculateGivenExpression(givenExpression);
 	}
+
 
 	std::cout << "Tested " << PASSED_EXPRESSIONS + FAILED_EXPRESSIONS << " expressions" << std::endl;
 	std::cout << "PASSED " << PASSED_EXPRESSIONS << std::endl;
