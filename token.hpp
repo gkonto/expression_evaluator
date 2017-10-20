@@ -43,12 +43,13 @@ struct Token
 	bool isError() const;
 	void clear();
 
-	bool isLeftAssociative(const Token &tok);
+	static bool isLeftAssociative(const Token &tok);
        	static bool isOperator(const Token &tok);
 	static bool isNumber(const Token &tok);
 	static bool isLeftBracket(const Token &tok);
 	static bool isFun(const Token &tok);
 	static bool isRightBracket(const Token &tok);
+	static bool isBracket(const Token &tok);
 	static bool isSub(const Token &tok);
 	static bool isAdd(const Token &tok);
 	static bool isMul(const Token &tok);

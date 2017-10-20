@@ -144,6 +144,10 @@ bool Token::isRightBracket(const Token &tok)
 	return (tok.type == Token::E_RBRACKET);
 } /* Token::isRightBracket */
 
+bool Token::isBracket(const Token &tok)
+{
+	return (isRightBracket(tok) || isLeftBracket(tok));
+} /* Token::isBracket */
 
 int Token::getPrecedence(Token::token_type tt)
 {

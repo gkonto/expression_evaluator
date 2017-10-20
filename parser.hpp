@@ -21,6 +21,7 @@ class Node
 		virtual void setRhs(Node *node) {}
 		virtual Node *getLhs() { return NULL; }
 		virtual Node *getRhs() { return NULL; }
+		virtual int   getPrecedence() { return 0; }
 	private:
 		std::vector<Node *> program_;
 };
@@ -38,7 +39,7 @@ class ExpressionNode : public Node
 class Number: public Node
 {
 	public:
-		Number() {}
+		Number(Token tok) : token_(tok) {}
 		void build(std::vector<Node *>&nodes) {}
 		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
@@ -47,10 +48,19 @@ class Number: public Node
 		Token token_;
 };
 
+class Bracket: public Node
+{
+	public:
+		Bracket(Token tok) : token_(tok) {}
+		Token getToken() { return token_; }
+	private:
+		Token token_;
+};
+
 class SubOp : public Node
 {
 	public:
-		SubOp() : lhs_(NULL), rhs_(NULL) {}
+		SubOp(Token tok) : token_(tok), lhs_(NULL), rhs_(NULL) {}
 		void build(std::vector<Node *>&nodes);
 		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
@@ -59,6 +69,7 @@ class SubOp : public Node
 		void setRhs(Node *node)   { rhs_ = node; }
 		Node *getRhs() { return rhs_; }
 		Node *getLhs() { return lhs_; }
+		int   getPrecedence() { return 2; }
 	private:
 		Token token_;
 		Node *lhs_;
@@ -68,7 +79,7 @@ class SubOp : public Node
 class AddOp : public Node
 {
 	public:
-		AddOp() : lhs_(NULL), rhs_(NULL) {}
+		AddOp(Token tok) : token_(tok), lhs_(NULL), rhs_(NULL) {}
 		void build(std::vector<Node *>&nodes);
 		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
@@ -77,6 +88,7 @@ class AddOp : public Node
 		void setRhs(Node *node)   { rhs_ = node; }
 		Node *getRhs() { return rhs_; }
 		Node *getLhs() { return lhs_; }
+		int   getPrecedence() { return 2; }
 	private:
 		Token token_;
 		Node *lhs_;
@@ -86,7 +98,7 @@ class AddOp : public Node
 class MulOp : public Node
 {
 	public:
-		MulOp() : lhs_(NULL), rhs_(NULL) {}
+		MulOp(Token tok) : token_(tok), lhs_(NULL), rhs_(NULL) {}
 		void build(std::vector<Node *>&nodes);
 		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
@@ -95,6 +107,7 @@ class MulOp : public Node
 		Node *getRhs() { return rhs_; }
 		Node *getLhs() { return lhs_; }
 		Token getToken() { return token_; }
+		int   getPrecedence() { return 3; }
 	private:
 		Token token_;
 		Node *lhs_;
@@ -104,7 +117,7 @@ class MulOp : public Node
 class DivOp : public Node
 {
 	public:
-		DivOp() : lhs_(NULL), rhs_(NULL) {}
+		DivOp(Token tok) : token_(tok), lhs_(NULL), rhs_(NULL) {}
 		void build(std::vector<Node *>&nodes);
 		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
@@ -113,6 +126,7 @@ class DivOp : public Node
 		Node *getRhs() { return rhs_; }
 		Node *getLhs() { return lhs_; }
 		Token getToken() { return token_; }
+		int   getPrecedence() { return 3; }
 	private:
 		Token token_;
 		Node *lhs_;
@@ -122,7 +136,7 @@ class DivOp : public Node
 class ModOp : public Node
 {
 	public:
-		ModOp() : lhs_(NULL), rhs_(NULL) {}
+		ModOp(Token tok) :token_(tok), lhs_(NULL), rhs_(NULL) {}
 		void build(std::vector<Node *>&nodes);
 		void setToken(const Token &tok) { token_ = tok; }
 /*		double eval();*/
@@ -131,6 +145,7 @@ class ModOp : public Node
 		Node *getRhs() { return rhs_; }
 		Node *getLhs() { return lhs_; }
 		Token getToken() { return token_; }
+		int   getPrecedence() { return 3; }
 	private:
 		Token token_;
 		Node *lhs_;
@@ -140,7 +155,7 @@ class ModOp : public Node
 class PowOp : public Node
 {
 	public:
-		PowOp() : lhs_(NULL), rhs_(NULL) {}
+		PowOp(Token tok) : token_(tok), lhs_(NULL), rhs_(NULL) {}
 		void build(std::vector<Node *>&nodes);
 		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
@@ -149,6 +164,7 @@ class PowOp : public Node
 		Node *getRhs() { return rhs_; }
 		Node *getLhs() { return lhs_; }
 		Token getToken() { return token_; }
+		int   getPrecedence() { return 4; }
 	private:
 		Token token_;
 		Node *lhs_;
@@ -180,11 +196,13 @@ class Parser
 		Node *createNode(std::vector<Token> &tokens);
 		static Node *createNode(const Token &tok);
 		BracketChecker getBracketChecker() { return bracketChecker_; }
-	private:
-		static void displayCurrentState(std::vector<Token> stack, std::list<Token> postfix);
 		static void displayTokenVector(std::vector<Token> tokens);
+		static void displayCurrentState(std::vector<Token> stack, std::list<Token> postfix);
 		static void addOperator(Token &tok, std::vector<Token> &stack, std::list<Token> &postfix);
+		static void addOperator(Token &tok, std::vector<Node *> &stack, std::vector<Node *> &postfix);
 		static bool frontStackIsLeftBracket(std::vector<Token>);
+		static bool frontStackIsLeftBracket(std::vector<Node *>);
+	private:
 		static bool isStackTokenHigherOrEqualPrecedence(const Token &tok, std::vector<Token> stack);
 		bool isStackEqualPrecedence(Token &tok, std::vector<Token> stack);
 		BracketChecker bracketChecker_;
