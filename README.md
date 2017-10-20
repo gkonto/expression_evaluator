@@ -35,6 +35,7 @@ The evaluator can take 3 arguments:
 	-d [no, yes]           : Shows the detailed calculation from the beginning to the end. (default : yes)
 	-t [run, do_not_run]   : Runs the built in expressions (just for testing). (default : do_not_run)
 	-e [expression]        : Calculates the given expression instantly without comparison.
+	-o [filename]          : Reads a file as program. (Currently supporting only expressions)
 
 
 IMPORTANT NOTE: The evaluator is still under testing.
