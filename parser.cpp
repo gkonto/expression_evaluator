@@ -286,16 +286,17 @@ errorToken_.clear();
 
 std::size_t BracketChecker::checkBracketValidity(std::vector<Token> &tokens)
 {
-if (!tokens.empty()) {
-	for (std::size_t i = 0; i < (tokens.size()); ++i) {
-		const Token &t0 = tokens[i];
-		std::cout << tokens[i].value << std::endl;
-		if (!operator()(t0)) {
-			return i;
+	if (!tokens.empty()) {
+		for (std::size_t i = 0; i < (tokens.size()); ++i) {
+			const Token &t0 = tokens[i];
+			std::cout << tokens[i].value << std::endl;
+			if (!operator()(t0)) {
+				return i;
+			}
 		}
+		return tokens.size();
 	}
-}
-return tokens.size();
+	return 0;
 }
 
 bool BracketChecker::operator()(const Token &t)
@@ -366,19 +367,22 @@ Node *Parser::createNode(const Token &tok)
 
 Node *Parser::createNode(std::vector<Token> &tokens)
 {
-std::vector<Token>::iterator it;
+	std::vector<Token>::iterator it;
+	if (tokens.empty()) {
+		return NULL;
+	}
 
-// else it is expression, assignment etc.
-if (Token::isAssign(tokens[1])) { //maybe its an assignment
+	// else it is expression, assignment etc.
+	if (Token::isAssign(tokens[1])) { //maybe its an assignment
 
-} else {
-	ExpressionNode *node = new ExpressionNode;
-	return node;
-}
+	} else {
+		ExpressionNode *node = new ExpressionNode;
+		return node;
+	}
 
-//Should not reach this place!
-assert(false);
-return NULL;
+	//Should not reach this place!
+	assert(false);
+	return NULL;
 }
 
 /*----------------------------------------------*/

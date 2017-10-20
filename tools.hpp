@@ -10,6 +10,7 @@ enum exprStatus
 	eOk,
 	eError,
 	eNotValidExpr,
+	eInvalidBrackets,
 	eNoExprGiven
 };
 
@@ -63,6 +64,7 @@ extern void safePopBack(std::vector<T> &vec)
 
 
 
+//TODO to mpoulo
 class Validator
 {
 	public:

@@ -25,8 +25,6 @@ int PASSED_EXPRESSIONS;
 
 static double evaluate(const std::string &expr, int &err_code )
 {
-	double value = 0;
-
 	//lexer
 	Lexer lex;
 	lex.process(expr);
@@ -34,27 +32,34 @@ static double evaluate(const std::string &expr, int &err_code )
 		lex.display();
 	}
 	std::vector<Token> token_list = lex.getTokens();
-	
-	//validateExpression
-	Validator val(token_list);
-	if (!val.isValidExpr(err_code)){
-		return value;
-	}
+	std::cout << "Ena" << std::endl;
 
+	Parser parser;
+	BracketChecker bc = parser.getBracketChecker();
+	std::cout << "Duo" << std::endl;
+	if ( !token_list.empty() && bc.checkBracketValidity(token_list) != token_list.size()) {
+		std::cout << "Check the brackets!" << std::endl;
+		err_code = eInvalidBrackets; 
+		return 0;
+	} 
 	//parse
+	std::cout << "Tria" << std::endl;
 	Parser parse;
-	std::list<Token> postfix = parse.shuntingYard(token_list);
-	
-	//evaluator
-	Evaluator eval(postfix);
-	std::vector<Token> stack_ = eval.evaluate();
-
-	if (!stack_.empty()) {
-		value = atof(stack_[0].value.c_str());
+	Node *node = parser.createNode(token_list);
+	if (node) {
+		node->build(token_list);
 	} else {
-		std::cout << "STACK IS EMPTY, INVALID EXPRESSION!" << std::endl;
+		assert(true);
 	}
-
+	
+	std::cout << "Tessera" << std::endl;
+	// Evaluate Expression
+	double value = 0;
+	if (node) {
+		value = node->eval();
+	}
+	
+	std::cout << "Penta" << std::endl;
 	if (SHOW_DETAILED_CALCULATION) {
 		std::cout << std::setprecision(20) <<"Calculated Number is: " << value << std::endl;
 /*		std::cout << "Calculated Number is: " << value << std::endl;*/
@@ -73,13 +78,15 @@ void displayRelativeErrorMessage(const int err_code)
 		std::cout << "Malformed expression!" << std::endl;
 	} else if (err_code == eNoExprGiven) {
 		std::cout << "No expression given!" << std::endl;
+	} else if (err_code == eInvalidBrackets) {
+		std::cout << "Invalid Brackets!" << std::endl;
 	} else {
 		std::cout << "Update displayRelativeErrorMessage fun!" << std::endl;
 		assert(true);
 	}
 }
 
-static int calculate(const std::string &expr, double value)
+static int compareExpression(const std::string &expr, double value)
 {
 	int err_code = eOk;
 	double eval = evaluate(expr, err_code);
@@ -101,14 +108,14 @@ static int calculate(const std::string &expr, double value)
 		return eError;
 	}
 	return err_code;
-} /* calculate */
+} /* compareExpression */
 
 /*----------------------------------------------*/
 
 /*----------------------------------------------*/
 static int evalExpression(const std::string &expr, double value)
 {
-	int status = calculate(expr, value);
+	int status = compareExpression(expr, value);
 	if (SHOW_DETAILED_CALCULATION) {
 		std::cout << "------------------------------" << std::endl;
 	}
@@ -373,7 +380,7 @@ static void startReadingFile(std::ifstream &file)
 		std::cout << line << std::endl;
 
 		BracketChecker bc = parser.getBracketChecker();
-		if (bc.checkBracketValidity(tokens) != tokens.size()) {
+		if ( !tokens.empty() && bc.checkBracketValidity(tokens) != tokens.size()) {
 			std::cout << "Check the brackets!" << std::endl;
 			std::cout << "NOT VALID BRACKETS" << std::endl;
 			continue;
