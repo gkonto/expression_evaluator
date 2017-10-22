@@ -23,6 +23,9 @@ void Lexer::display()
 	std::cout << std::endl;
 } /* Lexer::display */
 
+/*********************************************************************/
+
+/*********************************************************************/
 void Lexer::skipWhitespace(void)
 {
 	while (!isEnd(s_itr_) && details::isWhitespace(*s_itr_))
@@ -265,7 +268,6 @@ void Lexer::scanNumber()
 
 } /* Lexer::scanNumber */
 
-
 /*********************************************************************/
 
 /*********************************************************************/
@@ -320,6 +322,9 @@ void Lexer::scanString()
 	return;
 } /* Lexer::scanString */
 
+/*********************************************************************/
+
+/*********************************************************************/
 void Lexer::clear()
 {
 	base_itr_ = 0;
@@ -328,6 +333,9 @@ void Lexer::clear()
 	token_list_.clear();
 } /* Lexer::clear */
 
+/*********************************************************************/
+
+/*********************************************************************/
 int Lexer::insertTokenCore(const Token &t0, const Token &t1, Token &new_token)
 {
 	bool match         = false;
@@ -377,6 +385,9 @@ int Lexer::insertTokenCore(const Token &t0, const Token &t1, Token &new_token)
 	return (match) ? 1 : -1;
 } /* Lexer::insertTokenCore */
 
+/*********************************************************************/
+
+/*********************************************************************/
 int Lexer::insertAdditionalTokens()
 {
 	if (token_list_.empty()) {
@@ -399,7 +410,9 @@ int Lexer::insertAdditionalTokens()
 	return changes++;
 } /* Lexer::insertAdditionalTokens */
 
+/*********************************************************************/
 
+/*********************************************************************/
 int Lexer::substituteTokensCore(const Token &t0, const Token &t1, Token &new_token)
 {
 	bool match = false;
@@ -421,7 +434,9 @@ int Lexer::substituteTokensCore(const Token &t0, const Token &t1, Token &new_tok
 	return (match) ? 1 : -1;
 } /* Lexer::substituteTokensCore */
 
+/*********************************************************************/
 
+/*********************************************************************/
 int Lexer::substituteTokens()
 {
 	if (token_list_.empty()) {
@@ -453,7 +468,9 @@ int Lexer::substituteTokens()
 	return changes;
 }
 
+/*********************************************************************/
 
+/*********************************************************************/
 bool Lexer::process(const std::string &str)
 /* Beginning of everything.
  * A string is given in this member fun.
@@ -505,20 +522,25 @@ bool Lexer::process(const std::string &str)
 	return true;
 } /* Lexer::process */
 
+/*********************************************************************/
+
+/*********************************************************************/
 bool Lexer::empty() const
 {
 	return token_list_.empty();
 } /* Lexer::empty */
 
+/*********************************************************************/
+
+/*********************************************************************/
 std::size_t Lexer::size() const
 {
 	return token_list_.size();
 } /* Lexer::size */
 
-void Lexer::begin()
-{
-} /* Lexer::begin */
+/*********************************************************************/
 
+/*********************************************************************/
 Token &Lexer::operator[](const std::size_t &index)
 {
 	if (index < token_list_.size()) {
@@ -528,6 +550,9 @@ Token &Lexer::operator[](const std::size_t &index)
 	}
 } /* &Lexer::operator[] */
 
+/*********************************************************************/
+
+/*********************************************************************/
 Token Lexer::operator[](const std::size_t &index) const
 {
 	if (index < token_list_.size()) {

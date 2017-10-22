@@ -30,7 +30,6 @@ class Lexer
 		bool process(const std::string &str);
 		bool empty() const;
 		std::size_t size() const;
-		void begin();
 		Token &operator[](const std::size_t &index);
 		Token operator[](const std::size_t &index) const;
 		std::vector<Token> getTokens() { return token_list_; }
@@ -60,21 +59,4 @@ class Lexer
 
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -14,7 +14,6 @@ class Node
 		virtual void build(std::vector<Token>&tokens) {};
 		virtual void build(std::vector<Node *> &stack) {};
 		virtual void setToken(const Token &tok) {};
-		virtual void addToStack(Node *node) {};
 		virtual double eval() { return 0; }
 		virtual Token getToken();
 		virtual void setLhs(Node *node) {}
@@ -33,7 +32,10 @@ class ExpressionNode : public Node
 		void build(std::vector<Token>&tokens);
 		double eval();
 	private:
-		 Node *e_node;
+		void addOperatorToStack(Node *node, std::vector<Node *>&stack, std::vector<Node *>&postfix);
+		bool isStackNodeHigherOrEqualPrecedenceFromNode(Node *node, std::vector<Node *>&stack);
+
+		Node *e_node;
 };
 
 class Number: public Node
@@ -53,6 +55,7 @@ class Bracket: public Node
 	public:
 		Bracket(Token tok) : token_(tok) {}
 		Token getToken() { return token_; }
+		void  setToken(Token tok) { token_ = tok; }
 	private:
 		Token token_;
 };
@@ -191,7 +194,6 @@ class Parser
 {
 	public:
 		Parser() {}
-		static std::list<Token> shuntingYard(std::vector<Token> tokens);
 
 		Node *createNode(std::vector<Token> &tokens);
 		static Node *createNode(const Token &tok);
@@ -207,10 +209,7 @@ class Parser
 		bool isStackEqualPrecedence(Token &tok, std::vector<Token> stack);
 		BracketChecker bracketChecker_;
 
-/*		std::vector<Token> token_list_;*/
-/*		std::vector<Token> stack_;*/
-/*		std::list<Token> postfix_;*/
-				
 };
 
 #endif
+

@@ -13,7 +13,6 @@
 
 #include "lexer.hpp"
 #include "parser.hpp"
-#include "evaluator.hpp"
 #include "tools.hpp"
 /*----------------------------------------------*/
 
@@ -32,18 +31,15 @@ static double evaluate(const std::string &expr, int &err_code )
 		lex.display();
 	}
 	std::vector<Token> token_list = lex.getTokens();
-	std::cout << "Ena" << std::endl;
 
 	Parser parser;
 	BracketChecker bc = parser.getBracketChecker();
-	std::cout << "Duo" << std::endl;
 	if ( !token_list.empty() && bc.checkBracketValidity(token_list) != token_list.size()) {
 		std::cout << "Check the brackets!" << std::endl;
 		err_code = eInvalidBrackets; 
 		return 0;
 	} 
 	//parse
-	std::cout << "Tria" << std::endl;
 	Parser parse;
 	Node *node = parser.createNode(token_list);
 	if (node) {
@@ -52,14 +48,12 @@ static double evaluate(const std::string &expr, int &err_code )
 		assert(true);
 	}
 	
-	std::cout << "Tessera" << std::endl;
 	// Evaluate Expression
 	double value = 0;
 	if (node) {
 		value = node->eval();
 	}
 	
-	std::cout << "Penta" << std::endl;
 	if (SHOW_DETAILED_CALCULATION) {
 		std::cout << std::setprecision(20) <<"Calculated Number is: " << value << std::endl;
 /*		std::cout << "Calculated Number is: " << value << std::endl;*/
@@ -438,7 +432,6 @@ int main(int argc, char **argv)
 	if (!givenExpression.empty()) {
 		calculateGivenExpression(givenExpression);
 	}
-
 
 	std::cout << "Tested " << PASSED_EXPRESSIONS + FAILED_EXPRESSIONS << " expressions" << std::endl;
 	std::cout << "PASSED " << PASSED_EXPRESSIONS << std::endl;

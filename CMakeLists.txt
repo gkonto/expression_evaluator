@@ -9,14 +9,12 @@ set(HEADERS
    tools.hpp
    token.hpp
    lexer.hpp
-   parser.hpp
-   evaluator.hpp)
+   parser.hpp)
 
 set(SOURCES 
     main.cpp
     token.cpp
     parser.cpp
-    evaluator.cpp
     lexer.cpp
     tools.cpp)
 
