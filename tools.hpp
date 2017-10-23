@@ -63,38 +63,4 @@ extern void safePopBack(std::vector<T> &vec)
 }
 
 
-
-//TODO to mpoulo
-class Validator
-{
-	public:
-		Validator(std::vector<Token> tokens) : token_list_(tokens)
-		{
-			acceptedTokenTypes.push_back(Token::E_NUMBER);
-			acceptedTokenTypes.push_back(Token::E_SYMBOL);
-			acceptedTokenTypes.push_back(Token::E_RBRACKET);
-			acceptedTokenTypes.push_back(Token::E_LBRACKET);
-			acceptedTokenTypes.push_back(Token::E_ADD);
-			acceptedTokenTypes.push_back(Token::E_SUB);
-			acceptedTokenTypes.push_back(Token::E_DIV);
-			acceptedTokenTypes.push_back(Token::E_MUL);
-			acceptedTokenTypes.push_back(Token::E_MOD);
-			acceptedTokenTypes.push_back(Token::E_POW);
-		}
-		void setNextTokenAcceptedTypes(Token::token_type type);
-		void setTokenTypesForNumber();
-		void setTokenTypesForSymbol();
-		void setTokenTypesForRBracket();
-		void setTokenTypesForLBracket();
-		void setTokenTypesForAdd();
-		void clearAcceptedTokenTypes();
-		void setTokenTypesForOperator();
-/*		void setTokenTypesForOperatorSubOrAdd();*/
-		bool isValidExpr(int &err_code);
-	private:
-		std::vector<Token> token_list_;
-		std::vector<int> acceptedTokenTypes;
-};
-
-
 #endif

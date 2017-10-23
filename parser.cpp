@@ -55,14 +55,6 @@ void DivOp::build(std::vector<Node *> &nodes)
 /**********************************************************/
 
 /**********************************************************/
-void ModOp::build(std::vector<Node *> &nodes)
-{
-	buildOpCore(this, nodes);
-} /* ModOp::build */
-
-/**********************************************************/
-
-/**********************************************************/
 void PowOp::build(std::vector<Node *> &nodes)
 {
 	buildOpCore(this, nodes);
@@ -205,12 +197,12 @@ double ExpressionNode::eval()
 double SubOp::eval()
 {
 	double left = 0;
-	if (this->lhs_) {
-		left =  (lhs_->eval());
+	if (this->getLhs()) {
+		left =  (getLhs()->eval());
 	}
 	double right = 0;
-	if (this->rhs_) {
-		right = (rhs_->eval());
+	if (this->getRhs()) {
+		right = (getRhs()->eval());
 	}
 
 	return (left-right);
@@ -222,12 +214,12 @@ double SubOp::eval()
 double AddOp::eval()
 {
 	double left = 0;
-	if (this->lhs_) {
-		left = (lhs_->eval());
+	if (this->getLhs()) {
+		left = (getLhs()->eval());
 	}
 	double right = 0;
-	if (this->rhs_) {
-		right = (rhs_->eval());
+	if (this->getRhs()) {
+		right = (getRhs()->eval());
 	}
 	return (left+right);
 } /* AddOp::eval */
@@ -238,12 +230,12 @@ double AddOp::eval()
 double MulOp::eval()
 {
 	double left = 0;
-	if (this->lhs_) {
-		left = (lhs_->eval());
+	if (this->getLhs()) {
+		left = (getLhs()->eval());
 	}
 	double right = 0;
-	if (this->rhs_) {
-		right = (rhs_->eval());
+	if (this->getRhs()) {
+		right = (getRhs()->eval());
 	}
 	return (left*right);
 } /* MulOp::eval */
@@ -254,12 +246,12 @@ double MulOp::eval()
 double DivOp::eval()
 {
 	double left = 0;
-	if (this->lhs_) {
-		left = (lhs_->eval());
+	if (this->getLhs()) {
+		left = (getLhs()->eval());
 	}
 	double right = 0;
-	if (this->rhs_) {
-		right = (rhs_->eval());
+	if (this->getRhs()) {
+		right = (getRhs()->eval());
 	}
 	return (left/right);
 } /* DivOp::eval */
@@ -270,12 +262,12 @@ double DivOp::eval()
 double PowOp::eval()
 {
 	double left = 0;
-	if (this->lhs_) {
-		left = (lhs_->eval());
+	if (this->getLhs()) {
+		left = (getLhs()->eval());
 	}
 	double right = 0;
-	if (this->rhs_) {
-		right = (rhs_->eval());
+	if (this->getRhs()) {
+		right = (getRhs()->eval());
 	}
 	return pow(left,right);
 } /* PowOp::eval */
@@ -369,9 +361,6 @@ Node *Parser::createNode(const Token &tok)
 			return node;
 		} else if (Token::isDiv(tok)) {
 			DivOp *node = new DivOp(tok);
-			return node;
-		} else if (Token::isMod(tok)) {
-			ModOp *node = new ModOp(tok);
 			return node;
 		} else if (Token::isPow(tok)) {
 			PowOp *node = new PowOp(tok);

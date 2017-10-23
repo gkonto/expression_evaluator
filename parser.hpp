@@ -13,16 +13,37 @@ class Node
 	public:
 		virtual void build(std::vector<Token>&tokens) {};
 		virtual void build(std::vector<Node *> &stack) {};
-		virtual void setToken(const Token &tok) {};
 		virtual double eval() { return 0; }
+		virtual int   getPrecedence() { return 0; }
+		virtual void  setToken(const Token &tok) {};
 		virtual Token getToken();
-		virtual void setLhs(Node *node) {}
-		virtual void setRhs(Node *node) {}
+		virtual void setLhs(Node *node) {};
+		virtual void setRhs(Node *node) {};
 		virtual Node *getLhs() { return NULL; }
 		virtual Node *getRhs() { return NULL; }
-		virtual int   getPrecedence() { return 0; }
 	private:
 		std::vector<Node *> program_;
+};
+
+class BinaryNode : public Node
+{
+	public:
+		void setToken(const Token &tok) { token_ = tok; }
+		Token getToken() { return token_; }
+		void setLhs(Node *node)   { lhs_ = node; }
+		void setRhs(Node *node)   { rhs_ = node; }
+		Node *getRhs() { return rhs_; }
+		Node *getLhs() { return lhs_; }
+		void createBinaryNode(Token tok)
+		{
+			token_ = tok;
+			lhs_   = NULL;
+			rhs_   = NULL;
+		};
+	private:
+		Token token_;
+		Node *lhs_;
+		Node *rhs_;
 };
 
 class ExpressionNode : public Node
@@ -60,118 +81,95 @@ class Bracket: public Node
 		Token token_;
 };
 
-class SubOp : public Node
+class SubOp : public BinaryNode
 {
 	public:
-		SubOp(Token tok) : token_(tok), lhs_(NULL), rhs_(NULL) {}
+		SubOp(Token tok)
+		{
+			createBinaryNode(tok);
+		};
 		void build(std::vector<Node *>&nodes);
-		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
-		Token getToken() { return token_; }
-		void setLhs(Node *node)   { lhs_ = node; }
-		void setRhs(Node *node)   { rhs_ = node; }
-		Node *getRhs() { return rhs_; }
-		Node *getLhs() { return lhs_; }
 		int   getPrecedence() { return 2; }
 	private:
-		Token token_;
-		Node *lhs_;
-		Node *rhs_;
+
+/*		Token token_;*/
+/*		Node *lhs_;*/
+/*		Node *rhs_;*/
 };
 
-class AddOp : public Node
+class AddOp : public BinaryNode
 {
 	public:
-		AddOp(Token tok) : token_(tok), lhs_(NULL), rhs_(NULL) {}
+		AddOp(Token tok)
+		{
+			createBinaryNode(tok);
+		};
 		void build(std::vector<Node *>&nodes);
-		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
-		Token getToken() { return token_; }
-		void setLhs(Node *node)   { lhs_ = node; }
-		void setRhs(Node *node)   { rhs_ = node; }
-		Node *getRhs() { return rhs_; }
-		Node *getLhs() { return lhs_; }
 		int   getPrecedence() { return 2; }
 	private:
-		Token token_;
-		Node *lhs_;
-		Node *rhs_;
+/*		Token token_;*/
+/*		Node *lhs_;*/
+/*		Node *rhs_;*/
 };
 
-class MulOp : public Node
+class MulOp : public BinaryNode
 {
 	public:
-		MulOp(Token tok) : token_(tok), lhs_(NULL), rhs_(NULL) {}
+		MulOp(Token tok)
+		{
+			createBinaryNode(tok);
+		};
 		void build(std::vector<Node *>&nodes);
-		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
-		void setLhs(Node *node)   { lhs_ = node; }
-		void setRhs(Node *node)   { rhs_ = node; }
-		Node *getRhs() { return rhs_; }
-		Node *getLhs() { return lhs_; }
-		Token getToken() { return token_; }
 		int   getPrecedence() { return 3; }
 	private:
-		Token token_;
-		Node *lhs_;
-		Node *rhs_;
+/*		Token token_;*/
+/*		Node *lhs_;*/
+/*		Node *rhs_;*/
 };
 
-class DivOp : public Node
+class DivOp : public BinaryNode
 {
 	public:
-		DivOp(Token tok) : token_(tok), lhs_(NULL), rhs_(NULL) {}
+		DivOp(Token tok)
+		{
+			createBinaryNode(tok);
+		};
 		void build(std::vector<Node *>&nodes);
-		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
-		void setLhs(Node *node)   { lhs_ = node; }
-		void setRhs(Node *node)   { rhs_ = node; }
-		Node *getRhs() { return rhs_; }
-		Node *getLhs() { return lhs_; }
-		Token getToken() { return token_; }
 		int   getPrecedence() { return 3; }
 	private:
-		Token token_;
-		Node *lhs_;
-		Node *rhs_;
+/*		Token token_;*/
+/*		Node *lhs_;*/
+/*		Node *rhs_;*/
 };
 
-class ModOp : public Node
-{
-	public:
-		ModOp(Token tok) :token_(tok), lhs_(NULL), rhs_(NULL) {}
-		void build(std::vector<Node *>&nodes);
-		void setToken(const Token &tok) { token_ = tok; }
-/*		double eval();*/
-		void setLhs(Node *node)   { lhs_ = node; }
-		void setRhs(Node *node)   { rhs_ = node; }
-		Node *getRhs() { return rhs_; }
-		Node *getLhs() { return lhs_; }
-		Token getToken() { return token_; }
-		int   getPrecedence() { return 3; }
-	private:
-		Token token_;
-		Node *lhs_;
-		Node *rhs_;
-};
+/*class ModOp : public BinaryNode*/
+/*{*/
+/*	public:*/
+/*		ModOp(Token tok) :token_(tok), lhs_(NULL), rhs_(NULL) {}*/
+/*		void build(std::vector<Node *>&nodes);*/
+/*//		double eval();*/
+/*		int   getPrecedence() { return 3; }*/
+/*	private:*/
+/*};*/
 
-class PowOp : public Node
+class PowOp : public BinaryNode
 {
 	public:
-		PowOp(Token tok) : token_(tok), lhs_(NULL), rhs_(NULL) {}
+		PowOp(Token tok)
+		{
+			createBinaryNode(tok);
+		};
 		void build(std::vector<Node *>&nodes);
-		void setToken(const Token &tok) { token_ = tok; }
 		double eval();
-		void setLhs(Node *node)   { lhs_ = node; }
-		void setRhs(Node *node)   { rhs_ = node; }
-		Node *getRhs() { return rhs_; }
-		Node *getLhs() { return lhs_; }
-		Token getToken() { return token_; }
 		int   getPrecedence() { return 4; }
 	private:
-		Token token_;
-		Node *lhs_;
-		Node *rhs_;
+/*		Token token_;*/
+/*		Node *lhs_;*/
+/*		Node *rhs_;*/
 };
 
 class BracketChecker
