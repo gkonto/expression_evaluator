@@ -34,12 +34,9 @@ class BinaryNode : public Node
 		void setRhs(Node *node)   { rhs_ = node; }
 		Node *getRhs() { return rhs_; }
 		Node *getLhs() { return lhs_; }
-		void createBinaryNode(Token tok)
-		{
-			token_ = tok;
-			lhs_   = NULL;
-			rhs_   = NULL;
-		};
+		virtual void build(std::vector<Node *>&nodes);
+		void createBinaryNode(Token tok);
+		virtual void evalChildren(double &lhs, double &rhs);
 	private:
 		Token token_;
 		Node *lhs_;
@@ -88,14 +85,10 @@ class SubOp : public BinaryNode
 		{
 			createBinaryNode(tok);
 		};
-		void build(std::vector<Node *>&nodes);
+/*		void build(std::vector<Node *>&nodes);*/
 		double eval();
 		int   getPrecedence() { return 2; }
 	private:
-
-/*		Token token_;*/
-/*		Node *lhs_;*/
-/*		Node *rhs_;*/
 };
 
 class AddOp : public BinaryNode
@@ -105,13 +98,10 @@ class AddOp : public BinaryNode
 		{
 			createBinaryNode(tok);
 		};
-		void build(std::vector<Node *>&nodes);
+/*		void build(std::vector<Node *>&nodes);*/
 		double eval();
 		int   getPrecedence() { return 2; }
 	private:
-/*		Token token_;*/
-/*		Node *lhs_;*/
-/*		Node *rhs_;*/
 };
 
 class MulOp : public BinaryNode
@@ -121,13 +111,10 @@ class MulOp : public BinaryNode
 		{
 			createBinaryNode(tok);
 		};
-		void build(std::vector<Node *>&nodes);
+/*		void build(std::vector<Node *>&nodes);*/
 		double eval();
 		int   getPrecedence() { return 3; }
 	private:
-/*		Token token_;*/
-/*		Node *lhs_;*/
-/*		Node *rhs_;*/
 };
 
 class DivOp : public BinaryNode
@@ -137,24 +124,11 @@ class DivOp : public BinaryNode
 		{
 			createBinaryNode(tok);
 		};
-		void build(std::vector<Node *>&nodes);
+/*		void build(std::vector<Node *>&nodes);*/
 		double eval();
 		int   getPrecedence() { return 3; }
 	private:
-/*		Token token_;*/
-/*		Node *lhs_;*/
-/*		Node *rhs_;*/
 };
-
-/*class ModOp : public BinaryNode*/
-/*{*/
-/*	public:*/
-/*		ModOp(Token tok) :token_(tok), lhs_(NULL), rhs_(NULL) {}*/
-/*		void build(std::vector<Node *>&nodes);*/
-/*//		double eval();*/
-/*		int   getPrecedence() { return 3; }*/
-/*	private:*/
-/*};*/
 
 class PowOp : public BinaryNode
 {
@@ -163,13 +137,10 @@ class PowOp : public BinaryNode
 		{
 			createBinaryNode(tok);
 		};
-		void build(std::vector<Node *>&nodes);
+/*		void build(std::vector<Node *>&nodes);*/
 		double eval();
 		int   getPrecedence() { return 4; }
 	private:
-/*		Token token_;*/
-/*		Node *lhs_;*/
-/*		Node *rhs_;*/
 };
 
 class BracketChecker

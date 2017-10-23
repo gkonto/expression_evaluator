@@ -5,60 +5,37 @@
 #include <assert.h>
 #include <stack>
 
-void buildOpCore(Node *binary, std::vector<Node *>&nodes)
+void BinaryNode::build(std::vector<Node *>&nodes)
 {
 	if (!nodes.empty()) {
-		binary->setRhs(nodes.back());
+		this->setRhs(nodes.back());
 		Token tok = nodes.back()->getToken();
 		nodes.pop_back();
 	}
 	if (!nodes.empty()) {
-		binary->setLhs(nodes.back());
+		this->setLhs(nodes.back());
 		Token tok = nodes.back()->getToken();
 		nodes.pop_back();
 	}
-	nodes.push_back(binary);
-} /* buildOpCore */
+	nodes.push_back(this);
+}
 
-/**********************************************************/
-
-/**********************************************************/
-void SubOp::build(std::vector<Node *> &nodes)
+void BinaryNode::createBinaryNode(Token tok)
 {
-	buildOpCore(this, nodes);
-} /* SubOp::build */
+	token_ = tok;
+	lhs_   = NULL;
+	rhs_   = NULL;
+}
 
-/**********************************************************/
-
-/**********************************************************/
-void AddOp::build(std::vector<Node *> &nodes)
+void BinaryNode::evalChildren(double &left, double &right)
 {
-	buildOpCore(this, nodes);
-} /* AddOp::build */
-
-/**********************************************************/
-
-/**********************************************************/
-void MulOp::build(std::vector<Node *> &nodes)
-{
-	buildOpCore(this, nodes);
-} /* MulOp::build */
-
-/**********************************************************/
-
-/**********************************************************/
-void DivOp::build(std::vector<Node *> &nodes)
-{
-	buildOpCore(this, nodes);
-} /* DivOp::build */
-
-/**********************************************************/
-
-/**********************************************************/
-void PowOp::build(std::vector<Node *> &nodes)
-{
-	buildOpCore(this, nodes);
-} /* PowOp::build */
+	if (this->getLhs()) {
+		left = getLhs()->eval();
+	}
+	if (this->getRhs()) {
+		right = getRhs()->eval();
+	}
+}
 
 /**********************************************************/
 
@@ -197,13 +174,9 @@ double ExpressionNode::eval()
 double SubOp::eval()
 {
 	double left = 0;
-	if (this->getLhs()) {
-		left =  (getLhs()->eval());
-	}
 	double right = 0;
-	if (this->getRhs()) {
-		right = (getRhs()->eval());
-	}
+
+	evalChildren(left, right);
 
 	return (left-right);
 } /* SubOp::eval */
@@ -214,13 +187,10 @@ double SubOp::eval()
 double AddOp::eval()
 {
 	double left = 0;
-	if (this->getLhs()) {
-		left = (getLhs()->eval());
-	}
 	double right = 0;
-	if (this->getRhs()) {
-		right = (getRhs()->eval());
-	}
+
+	evalChildren(left, right);
+
 	return (left+right);
 } /* AddOp::eval */
 
@@ -229,14 +199,11 @@ double AddOp::eval()
 /**********************************************************/
 double MulOp::eval()
 {
-	double left = 0;
-	if (this->getLhs()) {
-		left = (getLhs()->eval());
-	}
+	double left  = 0;
 	double right = 0;
-	if (this->getRhs()) {
-		right = (getRhs()->eval());
-	}
+
+	evalChildren(left, right);
+
 	return (left*right);
 } /* MulOp::eval */
 
@@ -245,14 +212,11 @@ double MulOp::eval()
 /**********************************************************/
 double DivOp::eval()
 {
-	double left = 0;
-	if (this->getLhs()) {
-		left = (getLhs()->eval());
-	}
+	double left  = 0;
 	double right = 0;
-	if (this->getRhs()) {
-		right = (getRhs()->eval());
-	}
+
+	evalChildren(left, right);
+
 	return (left/right);
 } /* DivOp::eval */
 
@@ -262,13 +226,10 @@ double DivOp::eval()
 double PowOp::eval()
 {
 	double left = 0;
-	if (this->getLhs()) {
-		left = (getLhs()->eval());
-	}
 	double right = 0;
-	if (this->getRhs()) {
-		right = (getRhs()->eval());
-	}
+
+	evalChildren(left, right);
+
 	return pow(left,right);
 } /* PowOp::eval */
 
