@@ -5,28 +5,48 @@
 #include <assert.h>
 #include <stack>
 
+
+Token Node::getToken()
+{
+	Token tok;
+	return tok;
+}
+
+/************************************************************************/
+
+/************************************************************************/
 void BinaryNode::build(std::vector<Node *>&nodes)
 {
 	if (!nodes.empty()) {
-		this->setRhs(nodes.back());
-		Token tok = nodes.back()->getToken();
-		nodes.pop_back();
+		//Check if tempR is indeed the left hand side or the right handside
+		//of the infix. If not, the expression was like +3
+		Node *tempR = nodes.back();
+		Token tempTok = tempR->getToken();
+		if (tempTok.position > this->getToken().position) {
+			this->setRhs(nodes.back());
+			nodes.pop_back();
+		}
 	}
 	if (!nodes.empty()) {
 		this->setLhs(nodes.back());
-		Token tok = nodes.back()->getToken();
 		nodes.pop_back();
 	}
 	nodes.push_back(this);
-}
+} /* BinaryNode::build */
 
+/************************************************************************/
+
+/************************************************************************/
 void BinaryNode::createBinaryNode(Token tok)
 {
 	token_ = tok;
 	lhs_   = NULL;
 	rhs_   = NULL;
-}
+} /* BinaryNode::createBinaryNode */
 
+/************************************************************************/
+
+/************************************************************************/
 void BinaryNode::evalChildren(double &left, double &right)
 {
 	if (this->getLhs()) {
@@ -35,20 +55,22 @@ void BinaryNode::evalChildren(double &left, double &right)
 	if (this->getRhs()) {
 		right = getRhs()->eval();
 	}
-}
+} /* BinaryNode::evalChildren */
 
-/**********************************************************/
+/************************************************************************/
 
-/**********************************************************/
-Token Node::getToken()
+/************************************************************************/
+bool ExpressionNode::isValid()
 {
-	Token tok;
-	return tok;
-} /* Node::getToken */
+	if (e_node) {
+		return (e_node->isValid());
+	}
+	return false;
+} /* ExpressionNode::isValid */
 
-/**********************************************************/
+/************************************************************************/
 
-/**********************************************************/
+/************************************************************************/
 bool ExpressionNode::isStackNodeHigherOrEqualPrecedenceFromNode(Node *node, std::vector<Node *>&stack)
 {
 	int nodePrecedence      = node->getPrecedence();
@@ -61,9 +83,9 @@ bool ExpressionNode::isStackNodeHigherOrEqualPrecedenceFromNode(Node *node, std:
 	return false;
 } /* ExpressionNode::isStackNodeHigherOrEqualPrecedenceFromNode */
 
-/**********************************************************/
+/************************************************************************/
 
-/**********************************************************/
+/************************************************************************/
 void ExpressionNode::addOperatorToStack(Node *node, std::vector<Node *>&stack, std::vector<Node *>&postfix)
 {
 	Token tok = node->getToken();
@@ -78,9 +100,9 @@ void ExpressionNode::addOperatorToStack(Node *node, std::vector<Node *>&stack, s
 	stack.push_back(node);
 } /* ExpressionNode::addOperatorToStack */
 
-/**********************************************************/
+/************************************************************************/
 
-/**********************************************************/
+/************************************************************************/
 void ExpressionNode::build(std::vector<Token> &tokens)
 {
 	//shuntingYard
@@ -96,25 +118,25 @@ void ExpressionNode::build(std::vector<Token> &tokens)
 	for ( it = tokens.begin(); it != tokens.end(); it++)
 	{
 		Token tok = *it;
-		std::cout << "Token: " << tok.value << std::endl;
+/*		std::cout << "Token: " << tok.value << std::endl;*/
 		if (tok.isNumber(tok)) {
 			Node *node = Parser::createNode(tok);
-			std::cout << "Number" << std::endl;
+/*			std::cout << "Number" << std::endl;*/
 			postfix.push_back(node);
 		} else if (tok.isOperator(tok)) {
-			std::cout << "Operator" << std::endl;
+/*			std::cout << "Operator" << std::endl;*/
 			Node *node = Parser::createNode(tok);
 			addOperatorToStack(node, stack, postfix);
 		} else if  (Token::isLeftBracket(tok) || Token::isFun(tok)) {
-			std::cout << "isLeftBracket" << std::endl;
+/*			std::cout << "isLeftBracket" << std::endl;*/
 			Node *node = Parser::createNode(tok);
 			stack.push_back(node);
 		} else if (Token::isRightBracket(tok)) {
-			std::cout << "isRightBracket" << std::endl;
+/*			std::cout << "isRightBracket" << std::endl;*/
 			while(!stack.empty() &&
 				!Parser::frontStackIsLeftBracket(stack))
 			{
-				std::cout << "GAMIESTE stack"<< stack.size() << std::endl;
+/*				std::cout << "GAMIESTE stack"<< stack.size() << std::endl;*/
 				Node *node = stack.back();
 				node->build(postfix);
 /*				postfix.push_back(node);*/
@@ -122,11 +144,9 @@ void ExpressionNode::build(std::vector<Token> &tokens)
 			}
 			if (Parser::frontStackIsLeftBracket(stack)) {
 
-				std::cout << "GAMIESTE stack"<< stack.size() << std::endl;
 				safePopBack<Node *>(stack);
 				if (!stack.empty() && Token::isFun(stack.back()->getToken())) {
 
-					std::cout << "GAMIESTE" << std::endl;
 					postfix.push_back(stack.back());
 					safePopBack<Node *>(stack);
 				}
@@ -135,14 +155,14 @@ void ExpressionNode::build(std::vector<Token> &tokens)
 /*		if (SHOW_DETAILED_CALCULATION) {*/
 /*			displayCurrentState(stack, postfix);*/
 /*		}*/
-		std::cout << "DBG: Postfix size " <<  postfix.size() << std::endl;
-		std::cout << "DBG: Stack size " <<  stack.size() << std::endl;
-		std::cout << std::endl;
+/*		std::cout << "DBG: Postfix size " <<  postfix.size() << std::endl;*/
+/*		std::cout << "DBG: Stack size " <<  stack.size() << std::endl;*/
+/*		std::cout << std::endl;*/
 	}
 	while(!stack.empty()) {
 		Node *node = stack.back();
 		Token tok = node->getToken();
-		std::cout << "DBG While loop " << tok.value << std::endl;
+/*		std::cout << "DBG While loop " << tok.value << std::endl;*/
 		node->build(postfix);
 /*		postfix.push_back(stack.back());*/
 		stack.pop_back();
@@ -151,15 +171,15 @@ void ExpressionNode::build(std::vector<Token> &tokens)
 /*	if (SHOW_DETAILED_CALCULATION) {*/
 /*		displayCurrentState(stack, postfix);*/
 /*	}*/
-	std::cout << "DBG: ExpressionNode build: " << postfix.size() << std::endl; 
+/*	std::cout << "DBG: ExpressionNode build: " << postfix.size() << std::endl; */
 	e_node = postfix[0];
 	
 /*	return postfix;*/
 } /* ExpressionNode::build */
 
-/**********************************************************/
+/************************************************************************/
 
-/**********************************************************/
+/************************************************************************/
 double ExpressionNode::eval()
 {
 	if (this->e_node) {
@@ -168,9 +188,9 @@ double ExpressionNode::eval()
 	return 0;
 } /* ExpressionNode::eval */
 
-/**********************************************************/
+/************************************************************************/
 
-/**********************************************************/
+/************************************************************************/
 double SubOp::eval()
 {
 	double left = 0;
@@ -181,9 +201,34 @@ double SubOp::eval()
 	return (left-right);
 } /* SubOp::eval */
 
-/**********************************************************/
+/************************************************************************/
 
-/**********************************************************/
+/************************************************************************/
+bool SubOp::isValid()
+{
+	bool isValidLhs = false;
+	bool isValidRhs = false;
+
+	if (lhs_) {
+		std::cout << "SubOp::lhs" << std::endl;
+		isValidLhs = lhs_->isValid();
+	} else {
+		isValidLhs = true;
+	}
+	if (rhs_) {
+		std::cout << "SubOp::rhs" << std::endl;
+		isValidRhs = rhs_->isValid();
+	} else {
+		isValidRhs = false;
+	}
+	std::cout << "isValidLhs" << isValidLhs << "isValidRhs " << isValidRhs << std::endl;
+	return (isValidRhs && isValidLhs);
+
+} /* SubOp::isValid */
+
+/************************************************************************/
+
+/************************************************************************/
 double AddOp::eval()
 {
 	double left = 0;
@@ -194,9 +239,34 @@ double AddOp::eval()
 	return (left+right);
 } /* AddOp::eval */
 
-/**********************************************************/
+/************************************************************************/
 
-/**********************************************************/
+/************************************************************************/
+bool AddOp::isValid()
+{
+	bool isValidLhs = false;
+	bool isValidRhs = false;
+
+	if (lhs_) {
+		std::cout << "AddOP::LHS" << std::endl;
+		isValidLhs = lhs_->isValid();
+	} else {
+		isValidLhs = true;
+	}
+	if (rhs_) {
+		std::cout << "AddOp::RHS" << std::endl;
+		isValidRhs = rhs_->isValid();
+	} else {
+		isValidRhs = false;
+	}
+
+	std::cout << "isValidLhs " <<  isValidLhs << "isValidRhg " <<  isValidRhs << std::endl;
+	return (isValidRhs && isValidLhs);
+} /* AddOp::isValid */
+
+/************************************************************************/
+
+/************************************************************************/
 double MulOp::eval()
 {
 	double left  = 0;
@@ -206,9 +276,13 @@ double MulOp::eval()
 
 	return (left*right);
 } /* MulOp::eval */
-
+/**********************************************************/
+/*                  MULOP NODE END                        */
 /**********************************************************/
 
+
+/**********************************************************/
+/*                  DIVOP NODE START                      */
 /**********************************************************/
 double DivOp::eval()
 {
@@ -219,8 +293,6 @@ double DivOp::eval()
 
 	return (left/right);
 } /* DivOp::eval */
-
-/**********************************************************/
 
 /**********************************************************/
 double PowOp::eval()
@@ -234,14 +306,10 @@ double PowOp::eval()
 } /* PowOp::eval */
 
 /**********************************************************/
-
-/**********************************************************/
 double Number::eval()
 {
 	return atof(this->getToken().value.c_str());
 }
-
-/**********************************************************/
 
 /**********************************************************/
 void BracketChecker::reset()

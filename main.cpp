@@ -367,7 +367,8 @@ static void startReadingFile(std::ifstream &file)
 
 	while (std::getline(file, line))
 	{
-		std::cout << "***********************************" << std::endl;
+		std::cout << "*****************************************" << std::endl;
+		std::cout << "*****************************************" << std::endl;
 		Lexer lex;
 		lex.process(line);
 		std::vector<Token> tokens = lex.getTokens();
@@ -383,9 +384,19 @@ static void startReadingFile(std::ifstream &file)
 		if (node) {
 			node->build(tokens);
 		}
+
+		bool valid = false;
+		if (node) {
+			valid = node->isValid();
+		}
+
+		if (!valid) {
+			std::cout << "But its not valid!" << std::endl;
+		}
+
 		//TODO svisto: apla kano eval na do an doyleuei.
 		std::cout << "EVALUATE PHASE..." << std::endl << std::endl;
-		std::cout << "Eval " << node->eval() << std::endl;
+		std::cout << "Evaluated: " << node->eval() << std::endl;
 		std::cout << "END OF EXPRESSION" << std::endl << std::endl;
 	}
 }
